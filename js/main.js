@@ -142,26 +142,44 @@
     const DEPTH = 10;
 
         var buildingTexture = [];
+        var bumpTexture = [];
+
         if(age == 'old') {
-          buildingTexture[0] = new THREE.TextureLoader().load('https://images.unsplash.com/32/Mc8kW4x9Q3aRR3RkP5Im_IMG_4417.jpg?ixlib=rb-1.2.1&auto=format&fit=crop&w=512&q=80');
-          buildingTexture[1] = new THREE.TextureLoader().load('https://images.unsplash.com/photo-1494491639528-85c7ab34c2f2?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60');
-          buildingTexture[2] = new THREE.TextureLoader().load('https://images.unsplash.com/photo-1547998872-71a44f061d5a?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=675&q=80');
-          buildingTexture[3] = new THREE.TextureLoader().load('https://images.unsplash.com/photo-1460602594182-8568137446ce?ixlib=rb-1.2.1&auto=format&fit=crop&w=512&q=80');
-          buildingTexture[4] = new THREE.TextureLoader().load('https://images.unsplash.com/photo-1508924445640-6ab6b79bce04?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60');
+          buildingTexture[0] = new THREE.TextureLoader().load('https://nicolopinci.github.io/fjarora/js/img/brick001.jpg');
+          buildingTexture[1] = new THREE.TextureLoader().load('https://nicolopinci.github.io/fjarora/js/img/brick002.jpg');
+          buildingTexture[2] = new THREE.TextureLoader().load('https://nicolopinci.github.io/fjarora/js/img/brick003.jpg');
+          buildingTexture[3] = new THREE.TextureLoader().load('https://nicolopinci.github.io/fjarora/js/img/brick004.jpg');
+          buildingTexture[4] = new THREE.TextureLoader().load('https://nicolopinci.github.io/fjarora/js/img/brick005.jpg');
+          buildingTexture[5] = new THREE.TextureLoader().load('https://nicolopinci.github.io/fjarora/js/img/brick006.jpg');
+
+          bumpTexture[0] = new THREE.TextureLoader().load('https://nicolopinci.github.io/fjarora/js/img/brick001bump.jpg');
+          bumpTexture[1] = new THREE.TextureLoader().load('https://nicolopinci.github.io/fjarora/js/img/brick002bump.jpg');
+          bumpTexture[2] = new THREE.TextureLoader().load('https://nicolopinci.github.io/fjarora/js/img/brick003bump.jpg');
+          bumpTexture[3] = new THREE.TextureLoader().load('https://nicolopinci.github.io/fjarora/js/img/brick004bump.jpg');
+          bumpTexture[4] = new THREE.TextureLoader().load('https://nicolopinci.github.io/fjarora/js/img/brick005bump.jpg');
+          bumpTexture[5] = new THREE.TextureLoader().load('https://nicolopinci.github.io/fjarora/js/img/brick006bump.jpg');
+
         }
 
 
         for(let i=0; i<buildingTexture.length; ++i) {
           buildingTexture[i].wrapS = THREE.RepeatWrapping;
           buildingTexture[i].wrapT = THREE.RepeatWrapping;
-          buildingTexture[i].repeat.set(1, Math.ceil(height/10));
+          buildingTexture[i].repeat.set(2, 2*Math.ceil(height/10));
+
+          bumpTexture[i].wrapS = THREE.RepeatWrapping;
+          bumpTexture[i].wrapT = THREE.RepeatWrapping;
+          bumpTexture[i].repeat.set(2, 2*Math.ceil(height/10));
         }
 
+        let whichTexture = Math.floor(Math.random()*buildingTexture.length);
 
         const oldMaterial =
-          new THREE.MeshLambertMaterial(
+          new THREE.MeshStandardMaterial(
             {
-            map: buildingTexture[Math.floor(Math.random()*buildingTexture.length)],
+            map: buildingTexture[whichTexture],
+            bumpMap: bumpTexture[whichTexture],
+
             });
 
             const newMaterial =
@@ -278,22 +296,28 @@
 
     scene.add(knot);
 
-    // Plane
+    // Ground
 
     const WIDTH = 10000;
     const HEIGHT = 10000;
 
-    const texture = new THREE.TextureLoader().load('https://images.unsplash.com/photo-1520718052537-5d45fe9156ee?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=400&q=80');
-    texture.wrapS = THREE.RepeatWrapping;
-    texture.wrapT = THREE.RepeatWrapping;
-    texture.repeat.set(WIDTH/10, HEIGHT/10);
+    const pavementTexture = new THREE.TextureLoader().load('https://nicolopinci.github.io/fjarora/js/img/pavement.jpg');
+    pavementTexture.wrapS = THREE.RepeatWrapping;
+    pavementTexture.wrapT = THREE.RepeatWrapping;
+    pavementTexture.repeat.set(WIDTH/5, HEIGHT/5);
+
+    const bumpPavement = new THREE.TextureLoader().load('https://nicolopinci.github.io/fjarora/js/img/pavementbump.jpg');
+    bumpPavement.wrapS = THREE.RepeatWrapping;
+    bumpPavement.wrapT = THREE.RepeatWrapping;
+    bumpPavement.repeat.set(WIDTH/5, HEIGHT/5);
 
     var planeMaterial =
       new THREE.MeshLambertMaterial(
         {
           color: 0xdddddd,
           side: THREE.DoubleSide,
-          map: texture,
+          map: pavementTexture,
+          bumpMap: bumpPavement,
 
         });
 
