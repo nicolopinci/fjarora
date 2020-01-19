@@ -90,11 +90,18 @@
     meadowTexture.wrapT = THREE.RepeatWrapping;
     meadowTexture.repeat.set(width/40, length/20);
 
+    const meadowBump = new THREE.TextureLoader().load('https://nicolopinci.github.io/fjarora/js/img/grassbump.jpg');
+
+    meadowBump.wrapS = THREE.RepeatWrapping;
+    meadowBump.wrapT = THREE.RepeatWrapping;
+    meadowBump.repeat.set(width/40, length/20);
+
 
     const meadowMaterial =
-      new THREE.MeshLambertMaterial(
+      new THREE.MeshStandardMaterial (
         {
           map: meadowTexture,
+          bumpMap: meadowBump,
           side: THREE.DoubleSide,
         });
 
@@ -309,10 +316,10 @@
     const bumpPavement = new THREE.TextureLoader().load('https://nicolopinci.github.io/fjarora/js/img/pavementbump.jpg');
     bumpPavement.wrapS = THREE.RepeatWrapping;
     bumpPavement.wrapT = THREE.RepeatWrapping;
-    bumpPavement.repeat.set(WIDTH/5, HEIGHT/5);
+    bumpPavement.repeat.set(WIDTH/10, HEIGHT/10);
 
     var planeMaterial =
-      new THREE.MeshLambertMaterial(
+      new THREE.MeshStandardMaterial(
         {
           color: 0xdddddd,
           side: THREE.DoubleSide,
