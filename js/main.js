@@ -84,7 +84,7 @@
     // Meadow
 
     //const meadowTexture = new THREE.TextureLoader().load('https://images.unsplash.com/photo-1544914379-806667cd9489?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=512&q=80');
-    const meadowTexture = new THREE.TextureLoader().load('img/grass.jpg');
+    const meadowTexture = new THREE.TextureLoader().load('https://nicolopinci.github.io/fjarora/js/img/grass.jpg');
 
     meadowTexture.wrapS = THREE.RepeatWrapping;
     meadowTexture.wrapT = THREE.RepeatWrapping;
