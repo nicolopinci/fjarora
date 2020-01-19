@@ -258,10 +258,12 @@
     scene.add( new THREE.AmbientLight( 0xffffff, 0.4 ) );
 
     // Sun
-    let sunAngle = Math.PI*3/10;
+    let sunAngle = Math.PI*2/10;
     scene = insertDirectionalLight(scene, "sun", 0, 5000*Math.sin(sunAngle), 5000*Math.cos(sunAngle), 0xffffaa);
 
     // Sphere
+    sphereTexture = new THREE.TextureLoader().load('https://nicolopinci.github.io/fjarora/js/img/glass.jpg');
+
     const RADIUS = 10;
     const SEGMENTS = 160;
     const RINGS = 160;
@@ -269,7 +271,8 @@
     const sphereMaterial =
       new THREE.MeshPhongMaterial(
         {
-          color: 0x2277ee,
+          map: sphereTexture,
+          //color: 0x2277ee,
           shininess: 100,
           opacity: 0.7,
           transparent: true,
