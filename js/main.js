@@ -219,7 +219,7 @@
     roofTexture.wrapT = THREE.RepeatWrapping;
     roofTexture.repeat.set(1,1);
 
-    const roofBump = new THREE.TextureLoader().load('https://nicolopinci.github.io/fjarora/js/img/roofbump.jpg');
+    const roofBump = new THREE.TextureLoader().load('https://nicolopinci.github.io/fjarora/js/img/roofbump.png');
     roofBump.wrapS = THREE.RepeatWrapping;
     roofBump.wrapT = THREE.RepeatWrapping;
     roofBump.repeat.set(1,1);
