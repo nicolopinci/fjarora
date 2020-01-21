@@ -24,6 +24,7 @@
     directionalLight.shadow.camera.top = 5000;
     directionalLight.shadow.camera.bottom = -5000;
     directionalLight.shadow.camera.visible = true;
+    directionalLight.shadow.bias = 0.00000001;
  //scene.add(new THREE.CameraHelper(directionalLight.shadow.camera));
  //console.log(directionalLight);
 
@@ -217,15 +218,15 @@
     const roofTexture = new THREE.TextureLoader().load('https://nicolopinci.github.io/fjarora/js/img/roof.jpg');
     roofTexture.wrapS = THREE.RepeatWrapping;
     roofTexture.wrapT = THREE.RepeatWrapping;
-    roofTexture.repeat.set(1,1);
+    roofTexture.repeat.set(3, 3);
 
     const roofBump = new THREE.TextureLoader().load('https://nicolopinci.github.io/fjarora/js/img/roofbump.png');
     roofBump.wrapS = THREE.RepeatWrapping;
     roofBump.wrapT = THREE.RepeatWrapping;
-    roofBump.repeat.set(1,1);
+    roofBump.repeat.set(3, 3);
 
     var geometry = new THREE.ConeGeometry(0.5*(1+OUTROOF)*Math.sqrt(Math.pow(CWIDTH, 2)+Math.pow(DEPTH, 2)), HEIGHT, EDGES);
-    var material = new THREE.MeshLambertMaterial( {map: roofTexture, bumpMap: roofBump, /* color: 0x660000, */} );
+    var material = new THREE.MeshNormalMaterial( {map: roofTexture, bumpMap: roofBump, /* color: 0x660000, */} );
     var cone = new THREE.Mesh(geometry, material);
     cone.position.x = x;
     cone.position.z = z;
