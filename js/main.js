@@ -214,13 +214,18 @@
     const OUTROOF = 0.2;
     const HEIGHT = 2;
 
-    /*const roofTexture = new THREE.TextureLoader().load('https://images.unsplash.com/photo-1458682625221-3a45f8a844c7?ixlib=rb-1.2.1&auto=format&fit=crop&w=967&q=80');
+    const roofTexture = new THREE.TextureLoader().load('https://nicolopinci.github.io/fjarora/js/img/roof.jpg');
     roofTexture.wrapS = THREE.RepeatWrapping;
     roofTexture.wrapT = THREE.RepeatWrapping;
-    roofTexture.repeat.set( 2, 2 );*/
+    roofTexture.repeat.set(1,1);
+
+    const roofBump = new THREE.TextureLoader().load('https://nicolopinci.github.io/fjarora/js/img/roofbump.jpg');
+    roofBump.wrapS = THREE.RepeatWrapping;
+    roofBump.wrapT = THREE.RepeatWrapping;
+    roofBump.repeat.set(1,1);
 
     var geometry = new THREE.ConeGeometry(0.5*(1+OUTROOF)*Math.sqrt(Math.pow(CWIDTH, 2)+Math.pow(DEPTH, 2)), HEIGHT, EDGES);
-    var material = new THREE.MeshLambertMaterial( {/*map: roofTexture, */ color: 0x660000, } );
+    var material = new THREE.MeshLambertMaterial( {map: roofTexture, bumpMap: roofBump, /* color: 0x660000, */} );
     var cone = new THREE.Mesh(geometry, material);
     cone.position.x = x;
     cone.position.z = z;
@@ -262,7 +267,10 @@
     scene = insertDirectionalLight(scene, "sun", 0, 5000*Math.sin(sunAngle), 5000*Math.cos(sunAngle), 0xffffaa);
 
     // Sphere
-    sphereTexture = new THREE.TextureLoader().load('https://nicolopinci.github.io/fjarora/js/img/glass.jpg');
+    var sphereTexture = new THREE.TextureLoader().load('https://nicolopinci.github.io/fjarora/js/img/glass.jpg');
+    sphereTexture.wrapS = THREE.RepeatWrapping;
+    sphereTexture.wrapT = THREE.RepeatWrapping;
+    sphereTexture.repeat.set(2, 2);
 
     const RADIUS = 10;
     const SEGMENTS = 160;
@@ -274,7 +282,7 @@
           map: sphereTexture,
           //color: 0x2277ee,
           shininess: 100,
-          opacity: 0.7,
+          opacity: 0.9,
           transparent: true,
         });
 
