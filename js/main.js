@@ -24,7 +24,7 @@
     directionalLight.shadow.camera.top = 5000;
     directionalLight.shadow.camera.bottom = -5000;
     directionalLight.shadow.camera.visible = true;
-    directionalLight.shadow.bias = 0.00000001;
+  //  directionalLight.shadow.bias = 0.00000001;
  //scene.add(new THREE.CameraHelper(directionalLight.shadow.camera));
  //console.log(directionalLight);
 
