@@ -259,7 +259,7 @@
 
   function insertWater(scene, x, z, height, width, depth) {
     // Water box
-    let waterMaterial = new MeshStandardMaterial {
+    let waterMaterial = new MeshStandardMaterial(
     textureWidth: 512,
     textureHeight: 512,
     waterNormals: waterNormals,
