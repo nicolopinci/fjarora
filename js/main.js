@@ -302,7 +302,7 @@ scene.add( mirrorMesh );
     scene.background = new THREE.Color(0x87ceeb);
 
     // Camera
-    var camera = new THREE.PerspectiveCamera(60, 13/6, .1, 1000000);
+    var camera = new THREE.PerspectiveCamera(60, window.innerWidth/window.innerHeight, .1, 1000000);
     camera.position.set(100, 100, 100);
     camera.lookAt(0, 0, 0);
 
@@ -435,9 +435,29 @@ scene.add( mirrorMesh );
 
     // Render
     var renderer = new THREE.WebGLRenderer();
-    renderer.setSize(1300, 600);
+    renderer.antialias: true;
+    renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+    let skyArray = [];
+    let sky_ft = new Three.TextureLoader().load('https://nicolopinci.github.io/fjarora/js/img/bluecloud_ft.jpg');
+    let sky_bk = new Three.TextureLoader().load('https://nicolopinci.github.io/fjarora/js/img/bluecloud_bk.jpg');
+    let sky_dh = new Three.TextureLoader().load('https://nicolopinci.github.io/fjarora/js/img/bluecloud_dn.jpg');
+    let sky_lf = new Three.TextureLoader().load('https://nicolopinci.github.io/fjarora/js/img/bluecloud_lf.jpg');
+    let sky_rt = new Three.TextureLoader().load('https://nicolopinci.github.io/fjarora/js/img/bluecloud_rt.jpg');
+    let sky_up = new Three.TextureLoader().load('https://nicolopinci.github.io/fjarora/js/img/bluecloud_up.jpg');
+
+    skyArray.push(new Three.MeshBasicMaterial({map: sky_ft}));
+    skyArray.push(new Three.MeshBasicMaterial({map: sky_bk}));
+    skyArray.push(new Three.MeshBasicMaterial({map: sky_dh}));
+    skyArray.push(new Three.MeshBasicMaterial({map: sky_lf}));
+    skyArray.push(new Three.MeshBasicMaterial({map: sky_rt}));
+    skyArray.push(new Three.MeshBasicMaterial({map: sky_up}));
+
+    let skyboxGeometry = new THREE.BoxGeometry(10000, 10000, 10000);
+    let skybox = new THREE.Mesh(skyboxGeometry, skyArray);
+    scene.add(skybox);
 
     document.getElementById('demo').appendChild(renderer.domElement);
 
