@@ -169,6 +169,10 @@
 
         }
 
+        concreteTexture = new THREE.TextureLoader().load('https://nicolopinci.github.io/fjarora/js/img/concrete.jpg');
+        concreteBump = new THREE.TextureLoader().load('https://nicolopinci.github.io/fjarora/js/img/concretebump.jpg');
+
+
 
         for(let i=0; i<buildingTexture.length; ++i) {
           buildingTexture[i].wrapS = THREE.RepeatWrapping;
@@ -180,6 +184,15 @@
           bumpTexture[i].repeat.set(2, 2*Math.ceil(height/10));
         }
 
+        concreteTexture.wrapS = THREE.RepeatWrapping;
+        concreteTexture.wrapT = THREE.RepeatWrapping;
+        concreteTexture.repeat.set(2, 2*Math.ceil(height/10));
+
+        concreteBump.wrapS = THREE.RepeatWrapping;
+        concreteBump.wrapT = THREE.RepeatWrapping;
+        concreteBump.repeat.set(2, 2*Math.ceil(height/10));
+
+        
         let whichTexture = Math.floor(Math.random()*buildingTexture.length);
 
         const oldMaterial =
@@ -191,10 +204,10 @@
             });
 
             const newMaterial =
-              new THREE.MeshPhongMaterial(
+              new THREE.MeshStandardMaterial(
                 {
-                color: 0x2203aa,
-                shininess: 100,
+                  map: concreteTexture,
+                  bumpMap: concreteBump,
                 });
 
     if(age == 'old') {
@@ -203,6 +216,7 @@
   else {
     var building = new THREE.Mesh(new THREE.BoxGeometry(CWIDTH, height, DEPTH), newMaterial);
   }
+
     building.position.z = z;
     building.position.x = x;
     building.position.y = height/2;
@@ -212,31 +226,31 @@
     scene.add(building);
 
     if(age == 'old') {
-    const EDGES = 4;
-    const OUTROOF = 0.2;
-    const HEIGHT = 2;
+      const EDGES = 4;
+      const OUTROOF = 0.2;
+      const HEIGHT = 2;
 
-    const roofTexture = new THREE.TextureLoader().load('https://nicolopinci.github.io/fjarora/js/img/roof.jpg');
-    roofTexture.wrapS = THREE.RepeatWrapping;
-    roofTexture.wrapT = THREE.RepeatWrapping;
-    roofTexture.repeat.set(1,1);
+      const roofTexture = new THREE.TextureLoader().load('https://nicolopinci.github.io/fjarora/js/img/roof.jpg');
+      roofTexture.wrapS = THREE.RepeatWrapping;
+      roofTexture.wrapT = THREE.RepeatWrapping;
+      roofTexture.repeat.set(1,1);
 
-    const roofBump = new THREE.TextureLoader().load('https://nicolopinci.github.io/fjarora/js/img/roofbump.jpg');
-    roofBump.wrapS = THREE.RepeatWrapping;
-    roofBump.wrapT = THREE.RepeatWrapping;
-    roofBump.repeat.set(1,1);
+      const roofBump = new THREE.TextureLoader().load('https://nicolopinci.github.io/fjarora/js/img/roofbump.jpg');
+      roofBump.wrapS = THREE.RepeatWrapping;
+      roofBump.wrapT = THREE.RepeatWrapping;
+      roofBump.repeat.set(1,1);
 
-    var geometry = new THREE.ConeGeometry(0.5*(1+OUTROOF)*Math.sqrt(Math.pow(CWIDTH, 2)+Math.pow(DEPTH, 2)), HEIGHT, EDGES);
-    var material = new THREE.MeshStandardMaterial( {map: roofTexture, bumpMap: roofBump, /* color: 0x660000, */} );
-    var cone = new THREE.Mesh(geometry, material);
-    cone.position.x = x;
-    cone.position.z = z;
-    cone.position.y = height + HEIGHT/2;
-    cone.rotation.y = Math.PI/4 + building.rotation.y;
-    cone.name = "roof";
-    scene.add( cone );
+      var geometry = new THREE.ConeGeometry(0.5*(1+OUTROOF)*Math.sqrt(Math.pow(CWIDTH, 2)+Math.pow(DEPTH, 2)), HEIGHT, EDGES);
+      var material = new THREE.MeshStandardMaterial( {map: roofTexture, bumpMap: roofBump, /* color: 0x660000, */} );
+      var cone = new THREE.Mesh(geometry, material);
+      cone.position.x = x;
+      cone.position.z = z;
+      cone.position.y = height + HEIGHT/2;
+      cone.rotation.y = Math.PI/4 + building.rotation.y;
+      cone.name = "roof";
+      scene.add( cone );
 
-  }
+    }
     return scene;
   }
 
