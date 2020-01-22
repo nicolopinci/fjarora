@@ -144,6 +144,7 @@
     return scene;
   }
 
+
   function insertBuilding(scene, x, z, height, age) {
     // Building
     const CWIDTH = 10;
@@ -254,6 +255,39 @@
     return scene;
   }
 
+
+
+  function insertWater(scene, x, z, height, width, depth) {
+    // Water box
+    let waterMaterial = new MeshStandardMaterial {
+    textureWidth: 512,
+    textureHeight: 512,
+    waterNormals: waterNormals,
+    alpha:  1.0,
+    sunDirection: light.position.clone().normalize(),
+    sunColor: 0xffffff,
+    waterColor: 0x001e0f,
+    distortionScale: 50.0,
+} );
+
+
+
+
+mirrorMesh = new THREE.Mesh(
+    new THREE.PlaneBufferGeometry( parameters.width * 500, parameters.height * 500 ),
+    waterMaterial
+);
+
+mirrorMesh.add( water );
+mirrorMesh.rotation.x = - Math.PI * 0.5;
+scene.add( mirrorMesh );
+
+    water.name = "waterGround";
+
+    scene.add(water);
+    return scene;
+  }
+
   const halfside = 3000;
   const square = 60;
   const minHeight = 10;
@@ -332,7 +366,7 @@
 
     // Ground
 
-    const WIDTH = 10000;
+    /*const WIDTH = 10000;
     const HEIGHT = 10000;
 
     const pavementTexture = new THREE.TextureLoader().load('https://nicolopinci.github.io/fjarora/js/img/pavement.jpg');
@@ -361,7 +395,7 @@
     plane.noCast = true;
     plane.name = "cityFloor";
 
-    scene.add(plane);
+    scene.add(plane); */
 
     // Buildings
 
@@ -412,8 +446,11 @@
     let shadowRecord = calculateShadowRecord(Math.PI/10, 10, 10, -meadowWidth/2, meadowWidth/2, -meadowLength/2, meadowLength/2, scene);
     let heatMap = transformToHeatMap(shadowRecord, 10, 10, -meadowWidth/2, meadowWidth/2, -meadowLength/2, meadowLength/2);
 
+    // water
+    scene = insertWater(scene);
+
     console.log(heatMap);
-    
+
     // Fog
     // scene.fog = new THREE.Fog(0x444444, 300, 900);
 
