@@ -211,6 +211,7 @@
 
     scene.add(building);
 
+    if(age == 'old') {
     const EDGES = 4;
     const OUTROOF = 0.2;
     const HEIGHT = 2;
@@ -218,15 +219,15 @@
     const roofTexture = new THREE.TextureLoader().load('https://nicolopinci.github.io/fjarora/js/img/roof.jpg');
     roofTexture.wrapS = THREE.RepeatWrapping;
     roofTexture.wrapT = THREE.RepeatWrapping;
-    roofTexture.repeat.set(3, 3);
+    roofTexture.repeat.set(1,1);
 
     const roofBump = new THREE.TextureLoader().load('https://nicolopinci.github.io/fjarora/js/img/roofbump.jpg');
     roofBump.wrapS = THREE.RepeatWrapping;
     roofBump.wrapT = THREE.RepeatWrapping;
-    roofBump.repeat.set(3, 3);
+    roofBump.repeat.set(1,1);
 
     var geometry = new THREE.ConeGeometry(0.5*(1+OUTROOF)*Math.sqrt(Math.pow(CWIDTH, 2)+Math.pow(DEPTH, 2)), HEIGHT, EDGES);
-    var material = new THREE.MeshNormalMaterial( {map: roofTexture, bumpMap: roofBump, /* color: 0x660000, */} );
+    var material = new THREE.MeshStandardMaterial( {map: roofTexture, bumpMap: roofBump, /* color: 0x660000, */} );
     var cone = new THREE.Mesh(geometry, material);
     cone.position.x = x;
     cone.position.z = z;
@@ -235,7 +236,7 @@
     cone.name = "roof";
     scene.add( cone );
 
-
+  }
     return scene;
   }
 
