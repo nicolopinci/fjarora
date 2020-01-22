@@ -413,7 +413,7 @@
     let heatMap = transformToHeatMap(shadowRecord, 10, 10, -meadowWidth/2, meadowWidth/2, -meadowLength/2, meadowLength/2);
 
     // Fog
-    scene.fog = new THREE.Fog(0x444444, 300, 900);
+    // scene.fog = new THREE.Fog(0x444444, 300, 900);
 
     // animation
     function animate() {
