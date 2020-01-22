@@ -257,38 +257,7 @@
 
 
 
-  function insertWater(scene, x, z, height, width, depth) {
-    // Water box
-    let waterMaterial = new MeshStandardMaterial(
-    textureWidth: 512,
-    textureHeight: 512,
-    waterNormals: waterNormals,
-    alpha:  1.0,
-    sunDirection: light.position.clone().normalize(),
-    sunColor: 0xffffff,
-    waterColor: 0x001e0f,
-    distortionScale: 50.0,
-} );
-
-
-
-
-mirrorMesh = new THREE.Mesh(
-    new THREE.PlaneBufferGeometry( parameters.width * 500, parameters.height * 500 ),
-    waterMaterial
-);
-
-mirrorMesh.add( water );
-mirrorMesh.rotation.x = - Math.PI * 0.5;
-scene.add( mirrorMesh );
-
-    water.name = "waterGround";
-
-    scene.add(water);
-    return scene;
-  }
-
-  const halfside = 3000;
+  const halfside = 750;
   const square = 60;
   const minHeight = 10;
   const threshold = 10.5;
@@ -366,18 +335,18 @@ scene.add( mirrorMesh );
 
     // Ground
 
-    /*const WIDTH = 10000;
-    const HEIGHT = 10000;
+    const WIDTH = 1500;
+    const HEIGHT = 1500;
 
     const pavementTexture = new THREE.TextureLoader().load('https://nicolopinci.github.io/fjarora/js/img/pavement.jpg');
     pavementTexture.wrapS = THREE.RepeatWrapping;
     pavementTexture.wrapT = THREE.RepeatWrapping;
-    pavementTexture.repeat.set(WIDTH/5, HEIGHT/5);
+    pavementTexture.repeat.set(WIDTH/20, HEIGHT/20);
 
     const bumpPavement = new THREE.TextureLoader().load('https://nicolopinci.github.io/fjarora/js/img/pavementbump.jpg');
     bumpPavement.wrapS = THREE.RepeatWrapping;
     bumpPavement.wrapT = THREE.RepeatWrapping;
-    bumpPavement.repeat.set(WIDTH/10, HEIGHT/10);
+    bumpPavement.repeat.set(WIDTH/20, HEIGHT/20);
 
     var planeMaterial =
       new THREE.MeshStandardMaterial(
@@ -389,13 +358,13 @@ scene.add( mirrorMesh );
 
         });
 
-    var planeGeo = new THREE.PlaneGeometry(WIDTH, HEIGHT, 32);
+    var planeGeo = new THREE.PlaneGeometry(WIDTH, HEIGHT, 1);
     var plane = new THREE.Mesh(planeGeo, planeMaterial);
     plane.rotation.x = Math.PI/2;
     plane.noCast = true;
     plane.name = "cityFloor";
 
-    scene.add(plane); */
+    scene.add(plane);
 
     // Buildings
 
@@ -435,25 +404,25 @@ scene.add( mirrorMesh );
 
     // Render
     var renderer = new THREE.WebGLRenderer();
-    renderer.antialias: true;
+    renderer.antialias = true;
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
     let skyArray = [];
-    let sky_ft = new Three.TextureLoader().load('https://nicolopinci.github.io/fjarora/js/img/bluecloud_ft.jpg');
-    let sky_bk = new Three.TextureLoader().load('https://nicolopinci.github.io/fjarora/js/img/bluecloud_bk.jpg');
-    let sky_dh = new Three.TextureLoader().load('https://nicolopinci.github.io/fjarora/js/img/bluecloud_dn.jpg');
-    let sky_lf = new Three.TextureLoader().load('https://nicolopinci.github.io/fjarora/js/img/bluecloud_lf.jpg');
-    let sky_rt = new Three.TextureLoader().load('https://nicolopinci.github.io/fjarora/js/img/bluecloud_rt.jpg');
-    let sky_up = new Three.TextureLoader().load('https://nicolopinci.github.io/fjarora/js/img/bluecloud_up.jpg');
+    let sky_ft = new THREE.TextureLoader().load('https://nicolopinci.github.io/fjarora/js/img/bluecloud_ft.jpg');
+    let sky_bk = new THREE.TextureLoader().load('https://nicolopinci.github.io/fjarora/js/img/bluecloud_bk.jpg');
+    let sky_dh = new THREE.TextureLoader().load('https://nicolopinci.github.io/fjarora/js/img/bluecloud_dn.jpg');
+    let sky_lf = new THREE.TextureLoader().load('https://nicolopinci.github.io/fjarora/js/img/bluecloud_lf.jpg');
+    let sky_rt = new THREE.TextureLoader().load('https://nicolopinci.github.io/fjarora/js/img/bluecloud_rt.jpg');
+    let sky_up = new THREE.TextureLoader().load('https://nicolopinci.github.io/fjarora/js/img/bluecloud_up.jpg');
 
-    skyArray.push(new Three.MeshBasicMaterial({map: sky_ft}));
-    skyArray.push(new Three.MeshBasicMaterial({map: sky_bk}));
-    skyArray.push(new Three.MeshBasicMaterial({map: sky_dh}));
-    skyArray.push(new Three.MeshBasicMaterial({map: sky_lf}));
-    skyArray.push(new Three.MeshBasicMaterial({map: sky_rt}));
-    skyArray.push(new Three.MeshBasicMaterial({map: sky_up}));
+    skyArray.push(new THREE.MeshBasicMaterial({map: sky_ft}));
+    skyArray.push(new THREE.MeshBasicMaterial({map: sky_bk}));
+    skyArray.push(new THREE.MeshBasicMaterial({map: sky_dh}));
+    skyArray.push(new THREE.MeshBasicMaterial({map: sky_lf}));
+    skyArray.push(new THREE.MeshBasicMaterial({map: sky_rt}));
+    skyArray.push(new THREE.MeshBasicMaterial({map: sky_up}));
 
     let skyboxGeometry = new THREE.BoxGeometry(10000, 10000, 10000);
     let skybox = new THREE.Mesh(skyboxGeometry, skyArray);
@@ -465,9 +434,6 @@ scene.add( mirrorMesh );
     // Calculate amount of shadow
     let shadowRecord = calculateShadowRecord(Math.PI/10, 10, 10, -meadowWidth/2, meadowWidth/2, -meadowLength/2, meadowLength/2, scene);
     let heatMap = transformToHeatMap(shadowRecord, 10, 10, -meadowWidth/2, meadowWidth/2, -meadowLength/2, meadowLength/2);
-
-    // water
-    scene = insertWater(scene);
 
     console.log(heatMap);
 
