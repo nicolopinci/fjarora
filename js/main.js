@@ -192,7 +192,7 @@
         concreteBump.wrapT = THREE.RepeatWrapping;
         concreteBump.repeat.set(2, 2*Math.ceil(height/10));
 
-        
+
         let whichTexture = Math.floor(Math.random()*buildingTexture.length);
 
         const oldMaterial =
@@ -411,6 +411,9 @@
     // Calculate amount of shadow
     let shadowRecord = calculateShadowRecord(Math.PI/10, 10, 10, -meadowWidth/2, meadowWidth/2, -meadowLength/2, meadowLength/2, scene);
     let heatMap = transformToHeatMap(shadowRecord, 10, 10, -meadowWidth/2, meadowWidth/2, -meadowLength/2, meadowLength/2);
+
+    // Fog
+    scene.fog = new THREE.Fog(0x444444, 300, 900);
 
     // animation
     function animate() {
