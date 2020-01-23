@@ -32,6 +32,15 @@
     return scene;
   }
 
+  function selectOccForTime(t, x, z, shadowRecord) {
+     for(let i=0; i<shadowRecord.length; ++i) {
+       if(shadowRecord[i].time == t && shadowRecord[i].x == x && shadowRecord[i].y == y) {
+         return 1;
+       }
+     }
+     return 0;
+  }
+
   function calculateShadowRecord(timeStep, hStep, dStep, hStart, hEnd, dStart, dEnd, scene) {
 
       let shadowCasters = [];
@@ -79,6 +88,20 @@
       heatMap[x][z] += 1;
     }
     return heatMap;
+  }
+
+  function diffMatrix(shadowRecord) {
+    let diffMap = [];
+    
+    for(row in shadowRecord) {
+      if(row.t > 0) {
+        let diff = selectOccForTime(row.t, row.x, row.z, shadowRecord) - selectOccForTime(row.t - 1, row.x, row.z, shadowRecord);
+        if(diff != 0) {
+          diffMap.push({row.t, row.x, row.z});
+        }
+      }
+    }
+    return diffMap;
   }
 
   function insertMeadow(scene, xCenter, zCenter, width, length) {
@@ -434,9 +457,11 @@
     // Calculate amount of shadow
     let shadowRecord = calculateShadowRecord(Math.PI/10, 10, 10, -meadowWidth/2, meadowWidth/2, -meadowLength/2, meadowLength/2, scene);
     let heatMap = transformToHeatMap(shadowRecord, 10, 10, -meadowWidth/2, meadowWidth/2, -meadowLength/2, meadowLength/2);
-
+    let diffMap = diffMatrix(shadowRecord);
+    
     console.log(shadowRecord);
-    console.log(heatMap);
+    //console.log(heatMap);
+    console.log(diffMap);
 
     // Fog
     // scene.fog = new THREE.Fog(0x444444, 300, 900);
