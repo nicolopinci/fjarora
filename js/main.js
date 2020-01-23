@@ -94,7 +94,7 @@
     let diffMap = [];
     
     for(row in shadowRecord) {
-      console.log(row);
+      console.log(row.t);
       /*if(row.t > 0) {
         let diff = selectOccForTime(row.t, row.x, row.z, shadowRecord) - selectOccForTime(row.t - 1, row.x, row.z, shadowRecord);
         if(diff != 0) {
