@@ -435,6 +435,7 @@
     let shadowRecord = calculateShadowRecord(Math.PI/10, 10, 10, -meadowWidth/2, meadowWidth/2, -meadowLength/2, meadowLength/2, scene);
     let heatMap = transformToHeatMap(shadowRecord, 10, 10, -meadowWidth/2, meadowWidth/2, -meadowLength/2, meadowLength/2);
 
+    console.log(shadowRecord);
     console.log(heatMap);
 
     // Fog
