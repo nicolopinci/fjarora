@@ -94,14 +94,15 @@
     let diffMap = [];
     
     for(row in shadowRecord) {
-      if(row.t > 0) {
+      console.log(row);
+      /*if(row.t > 0) {
         let diff = selectOccForTime(row.t, row.x, row.z, shadowRecord) - selectOccForTime(row.t - 1, row.x, row.z, shadowRecord);
         if(diff != 0) {
           diffMap.push({row.t, row.x, row.z});
         }
-      }
+      }*/
     }
-    return diffMap;
+    //return diffMap;
   }
 
   function insertMeadow(scene, xCenter, zCenter, width, length) {
