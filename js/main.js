@@ -70,6 +70,7 @@
       }
       console.log(shadowCasters);
       
+      
       let shadowMapOverTime = [];
       for(let ps=0; ps<=Math.PI; ps+=timeStep) {
         for(let h=hStart; h<=hEnd; h+=hStep) {
@@ -85,7 +86,7 @@
               var intersects = rc.intersectObjects(shadowCasters, true);
               if(intersects.length > 0) {
                             
-                if(ps==4*Math.PI/10) {
+
                   // Draw a line from pointA in the given direction at distance 100
                   var pointA = new THREE.Vector3(h, 0, d);
                   var direction = new THREE.Vector3(0, Math.sin(ps), -Math.cos(ps));
@@ -102,7 +103,7 @@
                   var material = new THREE.LineBasicMaterial( { color : 0xff0000 } );
                   var line = new THREE.Line( geometry, material );
                   scene.add( line );
-                }
+                
                 shadowMapOverTime.push({time: ps/timeStep, x: h, z: d});
               }
           }
