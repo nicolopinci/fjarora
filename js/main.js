@@ -474,7 +474,7 @@
     scene.add(skybox);
 
     document.getElementById('demo').appendChild(renderer.domElement);
-    let resolution = 5;
+    let resolution = 10;
     
 
     // Calculate amount of shadow
@@ -492,10 +492,10 @@
 
   var layout = {
   margin: {
-    l: 5,
-    r: 5,
-    b: 5,
-    t: 5,
+    l: 25,
+    r: 25,
+    b: 25,
+    t: 25,
     pad: 4
   }
 };
