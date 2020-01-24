@@ -323,7 +323,8 @@
     scene.add( new THREE.AmbientLight( 0xffffff, 0.4 ) );
 
     // Sun
-    let sunAngle = Math.PI*2/10;
+    let timeOfDay = 5;
+    let sunAngle = Math.PI*timeOfDay/10;
     scene = insertDirectionalLight(scene, "sun", 0, 5000*Math.sin(sunAngle), 5000*Math.cos(sunAngle), 0xffffaa);
 
     // Sphere
@@ -469,21 +470,22 @@
 
     let skyboxGeometry = new THREE.BoxGeometry(10000, 10000, 10000);
     let skybox = new THREE.Mesh(skyboxGeometry, skyArray);
-        skybox.rotation.z = Math.PI/2;
+        //skybox.rotation.z = Math.PI/2;
     scene.add(skybox);
 
     document.getElementById('demo').appendChild(renderer.domElement);
-
+    let resolution = 5;
+    
 
     // Calculate amount of shadow
-    let shadowRecord = calculateShadowRecord(Math.PI/10, 1, 1, -meadowWidth/2, meadowWidth/2, -meadowLength/2, meadowLength/2, scene);
-    let heatMap = transformToHeatMap(shadowRecord, 10, 10, -meadowWidth/2, meadowWidth/2, -meadowLength/2, meadowLength/2);
-    let diffMap = diffMatrix(shadowRecord);
+    let shadowRecord = calculateShadowRecord(Math.PI/10, resolution, resolution, -meadowWidth/2, meadowWidth/2, -meadowLength/2, meadowLength/2, scene);
+   // let heatMap = transformToHeatMap(shadowRecord, 10, 10, -meadowWidth/2, meadowWidth/2, -meadowLength/2, meadowLength/2);
+   // let diffMap = diffMatrix(shadowRecord);
     
     
     var data = [
     {
-      z: obtainDataHeat(2, shadowRecord, -meadowWidth/2, -meadowLength/2, meadowWidth/2, meadowLength/2, 1, 1),
+      z: obtainDataHeat(timeOfDay, shadowRecord, -meadowWidth/2, -meadowLength/2, meadowWidth/2, meadowLength/2, resolution, resolution),
       type: 'heatmap'
     }
   ];
