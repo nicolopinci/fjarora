@@ -61,22 +61,48 @@
   function calculateShadowRecord(timeStep, hStep, dStep, hStart, hEnd, dStart, dEnd, scene) {
 
       let shadowCasters = [];
+
       for(let i=0; i<scene.children.length; ++i) {
         //console.log(scene.children[i]);
         if(scene.children[i].castShadow) {
           shadowCasters.push(scene.children[i]);
         }
       }
-      console.log(shadowCasters.length);
-
+      console.log(shadowCasters);
+      
       let shadowMapOverTime = [];
       for(let ps=0; ps<=Math.PI; ps+=timeStep) {
         for(let h=hStart; h<=hEnd; h+=hStep) {
           for(let d=dStart; d<=dEnd; d+=dStep) {
-              let rc = new THREE.Raycaster(new THREE.Vector3(h, 0, d), new THREE.Vector3(0, Math.sin(ps), Math.cos(ps)));
-              var intersects = rc.intersectObjects(shadowCasters);
+          //console.log(h + " - " + d);
+
+              let rc = new THREE.Raycaster(new THREE.Vector3(h, 0, d), new THREE.Vector3(0, Math.sin(ps), -Math.cos(ps)));
+              
+              //console.log(ps + " --> (" + Math.sin(ps) + ", -" + Math.cos(ps));
+              rc.near = 0.1;
+              rc.far = 1000;
+              
+              var intersects = rc.intersectObjects(shadowCasters, true);
               if(intersects.length > 0) {
-                //console.log(intersects);
+                            
+                if(ps==4*Math.PI/10) {
+                  // Draw a line from pointA in the given direction at distance 100
+                  var pointA = new THREE.Vector3(h, 0, d);
+                  var direction = new THREE.Vector3(0, Math.sin(ps), -Math.cos(ps));
+                  direction.normalize();
+
+                  var distance = 1000; // at what distance to determine pointB
+
+                  var pointB = new THREE.Vector3();
+                  pointB.addVectors ( pointA, direction.multiplyScalar( distance ) );
+
+                  var geometry = new THREE.Geometry();
+                  geometry.vertices.push( pointA );
+                  geometry.vertices.push( pointB );
+                  var material = new THREE.LineBasicMaterial( { color : 0xff0000 } );
+                  var line = new THREE.Line( geometry, material );
+                  scene.add( line );
+                }
                 shadowMapOverTime.push({time: ps/timeStep, x: h, z: d});
               }
           }
@@ -156,7 +182,6 @@
     meadow.name = "meadow";
 
     scene.add(meadow);
-
 
     return scene;
   }
@@ -323,9 +348,9 @@
     scene.add( new THREE.AmbientLight( 0xffffff, 0.4 ) );
 
     // Sun
-    let timeOfDay = 5;
+    let timeOfDay = 8;
     let sunAngle = Math.PI*timeOfDay/10;
-    scene = insertDirectionalLight(scene, "sun", 0, 5000*Math.sin(sunAngle), 5000*Math.cos(sunAngle), 0xffffaa);
+    scene = insertDirectionalLight(scene, "sun", 0, 5000*Math.sin(sunAngle), -5000*Math.cos(sunAngle), 0xffffaa);
 
     // Sphere
     var sphereTexture = new THREE.TextureLoader().load('https://nicolopinci.github.io/fjarora/js/img/glass.jpg');
@@ -353,12 +378,12 @@
     sphere.position.y = RADIUS;
     sphere.name = "sphere";
 
-    scene.add(sphere);
+    //scene.add(sphere);
 
 
 
     // Knot sculpture
-    const knotMaterial =
+   /* const knotMaterial =
       new THREE.MeshPhongMaterial(
         {
           color: 0xadd8e6,
@@ -373,7 +398,7 @@
     knot.position.y = RADIUS;
     knot.name = "knot";
 
-    scene.add(knot);
+    scene.add(knot); */
 
     // Ground
 
@@ -416,10 +441,10 @@
         let heightNew = 50 + Math.abs(maxHeight*Math.sin(x+z));
 
           if(heightOld>threshold && heightOld < maxHeight && z>=0) {
-            scene = insertBuilding(scene, x+square*(Math.random()-Math.random())/1.5, z+square*(Math.random()-Math.random())/1.5, heightOld, 'old');
+            //scene = insertBuilding(scene, x+square*(Math.random()-Math.random())/1.5, z+square*(Math.random()-Math.random())/1.5, heightOld, 'old');
           }
           else if(z<=0 && Math.abs(z)<=600 && Math.abs(x)<=400 && Math.abs(z)>=meadowWidth) {
-            scene = insertBuilding(scene, x, z, heightNew, 'new');
+            //scene = insertBuilding(scene, x, z, heightNew, 'new');
           }
           else if(Math.abs(x)==Math.abs(z) && Math.abs(x)>140) {
             //scene = insertGalleryModule(scene, x, z, square*0.5, square*1.415);
@@ -461,27 +486,26 @@
 
     skyArray.push(new THREE.MeshBasicMaterial({map: sky_ft, side: THREE.DoubleSide,}));
     skyArray.push(new THREE.MeshBasicMaterial({map: sky_bk, side: THREE.DoubleSide,}));
-        skyArray.push(new THREE.MeshBasicMaterial({map: sky_up, side: THREE.DoubleSide,}));
+    skyArray.push(new THREE.MeshBasicMaterial({map: sky_up, side: THREE.DoubleSide,}));
     skyArray.push(new THREE.MeshBasicMaterial({map: sky_dn, side: THREE.DoubleSide,}));
-        skyArray.push(new THREE.MeshBasicMaterial({map: sky_rt, side: THREE.DoubleSide,}));
+    skyArray.push(new THREE.MeshBasicMaterial({map: sky_rt, side: THREE.DoubleSide,}));
     skyArray.push(new THREE.MeshBasicMaterial({map: sky_lf, side: THREE.DoubleSide,}));
 
 
 
     let skyboxGeometry = new THREE.BoxGeometry(10000, 10000, 10000);
     let skybox = new THREE.Mesh(skyboxGeometry, skyArray);
-        //skybox.rotation.z = Math.PI/2;
     scene.add(skybox);
 
     document.getElementById('demo').appendChild(renderer.domElement);
-    let resolution = 10;
+    let resolution = 5;
     
-
     // Calculate amount of shadow
     let shadowRecord = calculateShadowRecord(Math.PI/10, resolution, resolution, -meadowWidth/2, meadowWidth/2, -meadowLength/2, meadowLength/2, scene);
    // let heatMap = transformToHeatMap(shadowRecord, 10, 10, -meadowWidth/2, meadowWidth/2, -meadowLength/2, meadowLength/2);
    // let diffMap = diffMatrix(shadowRecord);
     
+    console.log(shadowRecord);
     
     var data = [
     {
