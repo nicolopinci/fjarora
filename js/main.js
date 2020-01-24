@@ -34,7 +34,7 @@
 
   function selectOccForTime(t, x, z, shadowRecord) {
      for(let i=0; i<shadowRecord.length; ++i) {
-       if(shadowRecord[i].time == t && shadowRecord[i].x == x && shadowRecord[i].y == y) {
+       if(shadowRecord[i].time == t && shadowRecord[i].x == x && shadowRecord[i].z == z) {
          return 1;
        }
      }
@@ -93,16 +93,16 @@
   function diffMatrix(shadowRecord) {
     let diffMap = [];
     
-    for(row in shadowRecord) {
-      console.log(row.t);
-      /*if(row.t > 0) {
-        let diff = selectOccForTime(row.t, row.x, row.z, shadowRecord) - selectOccForTime(row.t - 1, row.x, row.z, shadowRecord);
+    for(let i=0; i<shadowRecord.length; ++i) {
+
+      if(shadowRecord[i].time > 0) {
+        let diff = selectOccForTime(shadowRecord[i].time, shadowRecord[i].x, shadowRecord[i].z, shadowRecord) - selectOccForTime(shadowRecord[i].time - 1, shadowRecord[i].x, shadowRecord[i].z, shadowRecord);
         if(diff != 0) {
-          diffMap.push({row.t, row.x, row.z});
+          diffMap.push({time: shadowRecord[i].time, x: shadowRecord[i].x, z: shadowRecord[i].z});
         }
-      }*/
+      }
     }
-    //return diffMap;
+    return diffMap;
   }
 
   function insertMeadow(scene, xCenter, zCenter, width, length) {
@@ -441,15 +441,16 @@
     let sky_rt = new THREE.TextureLoader().load('https://nicolopinci.github.io/fjarora/js/img/bluecloud_rt.jpg');
     let sky_up = new THREE.TextureLoader().load('https://nicolopinci.github.io/fjarora/js/img/bluecloud_up.jpg');
 
-    skyArray.push(new THREE.MeshBasicMaterial({map: sky_ft}));
-    skyArray.push(new THREE.MeshBasicMaterial({map: sky_bk}));
-    skyArray.push(new THREE.MeshBasicMaterial({map: sky_dh}));
-    skyArray.push(new THREE.MeshBasicMaterial({map: sky_lf}));
-    skyArray.push(new THREE.MeshBasicMaterial({map: sky_rt}));
-    skyArray.push(new THREE.MeshBasicMaterial({map: sky_up}));
+    skyArray.push(new THREE.MeshBasicMaterial({map: sky_ft, side: THREE.DoubleSide,}));
+    skyArray.push(new THREE.MeshBasicMaterial({map: sky_bk, side: THREE.DoubleSide,}));
+    skyArray.push(new THREE.MeshBasicMaterial({map: sky_dh, side: THREE.DoubleSide,}));
+    skyArray.push(new THREE.MeshBasicMaterial({map: sky_lf, side: THREE.DoubleSide,}));
+    skyArray.push(new THREE.MeshBasicMaterial({map: sky_rt, side: THREE.DoubleSide,}));
+    skyArray.push(new THREE.MeshBasicMaterial({map: sky_up, side: THREE.DoubleSide,}));
 
     let skyboxGeometry = new THREE.BoxGeometry(10000, 10000, 10000);
     let skybox = new THREE.Mesh(skyboxGeometry, skyArray);
+        skybox.rotation.z = Math.PI/2;
     scene.add(skybox);
 
     document.getElementById('demo').appendChild(renderer.domElement);
