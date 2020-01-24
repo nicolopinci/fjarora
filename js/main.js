@@ -1,5 +1,22 @@
 (function () {
 
+
+  function obtainDataHeat(t, map, xMin, zMin, xMax, zMax, xStep, zStep) {
+    
+    let heatData = [];
+    
+    for(let x=xMin; x<=xMax; x+=xStep) {
+      let currentX = [];
+      for(let z=zMin; z<=zMax; z+=zStep) {
+        let presence = selectOccForTime(t, x, z, map);
+        currentX.push(presence);
+      }
+      heatData.push(currentX);
+    }
+    
+    return heatData;
+  }
+
   function insertPointLight(scene, name, x, y, z, color, intensity, distance, decay) {
     const pointLight = new THREE.PointLight(color, intensity, distance, decay);
     pointLight.position.set(x, y, z);
@@ -459,13 +476,30 @@
 
 
     // Calculate amount of shadow
-    let shadowRecord = calculateShadowRecord(Math.PI/10, 10, 10, -meadowWidth/2, meadowWidth/2, -meadowLength/2, meadowLength/2, scene);
+    let shadowRecord = calculateShadowRecord(Math.PI/10, 1, 1, -meadowWidth/2, meadowWidth/2, -meadowLength/2, meadowLength/2, scene);
     let heatMap = transformToHeatMap(shadowRecord, 10, 10, -meadowWidth/2, meadowWidth/2, -meadowLength/2, meadowLength/2);
     let diffMap = diffMatrix(shadowRecord);
     
-    console.log(shadowRecord);
-    //console.log(heatMap);
-    console.log(diffMap);
+    
+    var data = [
+    {
+      z: obtainDataHeat(2, shadowRecord, -meadowWidth/2, -meadowLength/2, meadowWidth/2, meadowLength/2, 1, 1),
+      type: 'heatmap'
+    }
+  ];
+
+  var layout = {
+  margin: {
+    l: 5,
+    r: 5,
+    b: 5,
+    t: 5,
+    pad: 4
+  }
+};
+
+  Plotly.newPlot('heatMap', data, layout);
+      
 
     // Fog
     // scene.fog = new THREE.Fog(0x444444, 300, 900);
