@@ -436,17 +436,19 @@
     let skyArray = [];
     let sky_ft = new THREE.TextureLoader().load('https://nicolopinci.github.io/fjarora/js/img/bluecloud_ft.jpg');
     let sky_bk = new THREE.TextureLoader().load('https://nicolopinci.github.io/fjarora/js/img/bluecloud_bk.jpg');
-    let sky_dh = new THREE.TextureLoader().load('https://nicolopinci.github.io/fjarora/js/img/bluecloud_dn.jpg');
+    let sky_dn = new THREE.TextureLoader().load('https://nicolopinci.github.io/fjarora/js/img/bluecloud_dn.jpg');
     let sky_lf = new THREE.TextureLoader().load('https://nicolopinci.github.io/fjarora/js/img/bluecloud_lf.jpg');
     let sky_rt = new THREE.TextureLoader().load('https://nicolopinci.github.io/fjarora/js/img/bluecloud_rt.jpg');
     let sky_up = new THREE.TextureLoader().load('https://nicolopinci.github.io/fjarora/js/img/bluecloud_up.jpg');
 
     skyArray.push(new THREE.MeshBasicMaterial({map: sky_ft, side: THREE.DoubleSide,}));
     skyArray.push(new THREE.MeshBasicMaterial({map: sky_bk, side: THREE.DoubleSide,}));
-    skyArray.push(new THREE.MeshBasicMaterial({map: sky_dh, side: THREE.DoubleSide,}));
+        skyArray.push(new THREE.MeshBasicMaterial({map: sky_up, side: THREE.DoubleSide,}));
+    skyArray.push(new THREE.MeshBasicMaterial({map: sky_dn, side: THREE.DoubleSide,}));
+        skyArray.push(new THREE.MeshBasicMaterial({map: sky_rt, side: THREE.DoubleSide,}));
     skyArray.push(new THREE.MeshBasicMaterial({map: sky_lf, side: THREE.DoubleSide,}));
-    skyArray.push(new THREE.MeshBasicMaterial({map: sky_rt, side: THREE.DoubleSide,}));
-    skyArray.push(new THREE.MeshBasicMaterial({map: sky_up, side: THREE.DoubleSide,}));
+
+
 
     let skyboxGeometry = new THREE.BoxGeometry(10000, 10000, 10000);
     let skybox = new THREE.Mesh(skyboxGeometry, skyArray);
