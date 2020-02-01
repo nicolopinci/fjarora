@@ -32,8 +32,8 @@
     directionalLight.castShadow = true;
 
     //directionalLight.shadowDarkness = 0.1;
-    directionalLight.shadow.mapSize.width = 10000;
-    directionalLight.shadow.mapSize.height = 10000;
+    directionalLight.shadow.mapSize.width = 5000;
+    directionalLight.shadow.mapSize.height = 5000;
     directionalLight.shadow.camera.near = 0.01;
     directionalLight.shadow.camera.far = 10000;
     directionalLight.shadow.camera.left = -5000;
@@ -44,7 +44,7 @@
   //  directionalLight.shadow.bias = 0.00000001;
  //scene.add(new THREE.CameraHelper(directionalLight.shadow.camera));
  //console.log(directionalLight);
-
+ //scene.add(new THREE.DirectionalLightHelper(directionalLight));
     scene.add(directionalLight);
     return scene;
   }
@@ -60,39 +60,78 @@
 
   function calculateShadowRecord(timeStep, hStep, dStep, hStart, hEnd, dStart, dEnd, scene) {
 
+
       let shadowCasters = [];
 
       for(let i=0; i<scene.children.length; ++i) {
         //console.log(scene.children[i]);
         if(scene.children[i].castShadow) {
+          
           shadowCasters.push(scene.children[i]);
         }
       }
-      console.log(shadowCasters);
+
       
       
       let shadowMapOverTime = [];
+
       for(let ps=0; ps<=Math.PI; ps+=timeStep) {
         for(let h=hStart; h<=hEnd; h+=hStep) {
           for(let d=dStart; d<=dEnd; d+=dStep) {
           //console.log(h + " - " + d);
+              
+              //let rc = new THREE.Raycaster(new THREE.Vector3(h, 0.1, d), new THREE.Vector3(0, Math.sin(ps), -Math.cos(ps)).normalize());
+              let rc = new THREE.Raycaster();
 
-              let rc = new THREE.Raycaster(new THREE.Vector3(h, 0, d), new THREE.Vector3(0, Math.sin(ps), -Math.cos(ps)));
+              rc.set(new THREE.Vector3(h, 0, d), new THREE.Vector3(0, Math.sin(ps), -Math.cos(ps)).normalize());
+              
+              // rc.set(new THREE.Vector3(h, 0, d), new THREE.Vector3(0, Math.sin(0.1*Math.PI), -Math.cos(0.1*Math.PI)).normalize());
+              /*let ortCamera = new THREE.OrthographicCamera(-5000, 5000, -5000, 5000, 0.01, 10000);
+              rc.setFromCamera(new THREE.Vector3(h, 0.1, d), ortCamera);*/
+              
+              // let rc = new THREE.Raycaster(new THREE.Vector3(0, 5000*(h+Math.sin(sunAngle)), -5000*(d+Math.cos(sunAngle))), new THREE.Vector3(0, -Math.sin(ps), Math.cos(ps)).normalize());
               
               //console.log(ps + " --> (" + Math.sin(ps) + ", -" + Math.cos(ps));
-              rc.near = 0.1;
-              rc.far = 1000;
-              
-              var intersects = rc.intersectObjects(shadowCasters, true);
-              if(intersects.length > 0) {
-                            
+              rc.near = 0;
+              rc.far = Infinity;
 
-                  // Draw a line from pointA in the given direction at distance 100
-                  var pointA = new THREE.Vector3(h, 0, d);
+              let intersects = rc.intersectObjects(shadowCasters, true);
+              
+              //if(intersects.length > 0) {
+                   //console.log(h + ", " + d);
+                   //console.log(rc);  
+
+                  
+               if(intersects.length > 0) {
+               
+
+                                    
+                   for(let p=0; p<intersects.length; ++p) {
+                      
+                     //console.log(intersects);
+                     let objPosX = intersects[p].object.position.x;
+                     let objPosZ = intersects[p].object.position.z - intersects[p].distance*Math.cos(ps*timeStep);
+                     //let objPosZ = intersects[p].object.position.z+90; // +intersects[p].object.geometry.height/Math.tan(ps*timeStep);
+                   
+
+                  
+                      //console.log(h+ ", " +d);
+                      if(h+objPosX<=hEnd && h+objPosX>=hStart && d+objPosZ<=dEnd && d+objPosZ>=dStart) {
+
+                     shadowMapOverTime.push({time: ps/timeStep, x: h+objPosX, z: d+objPosZ});
+               // console.log(objPosZ);
+                //objPosX = 0;
+//objPosZ = 110;
+                
+
+                               
+                    //console.log(intersects);
+                  if(ps==9*timeStep) {
+                 var pointA = new THREE.Vector3(h+objPosX, 0, d+objPosZ);
                   var direction = new THREE.Vector3(0, Math.sin(ps), -Math.cos(ps));
                   direction.normalize();
 
-                  var distance = 1000; // at what distance to determine pointB
+                  var distance = 300; 
 
                   var pointB = new THREE.Vector3();
                   pointB.addVectors ( pointA, direction.multiplyScalar( distance ) );
@@ -103,8 +142,12 @@
                   var material = new THREE.LineBasicMaterial( { color : 0xff0000 } );
                   var line = new THREE.Line( geometry, material );
                   scene.add( line );
+                }
+                }
+               
                 
-                shadowMapOverTime.push({time: ps/timeStep, x: h, z: d});
+                }
+         
               }
           }
         }
@@ -181,7 +224,7 @@
     meadow.rotation.x = Math.PI/2;
     meadow.noCast = true;
     meadow.name = "meadow";
-
+    
     scene.add(meadow);
 
     return scene;
@@ -289,7 +332,7 @@
     building.position.x = x;
     building.position.y = height/2;
     building.rotation.y = Math.random()*Math.PI;
-    building.name = "building";
+    building.name = age+"building";
 
     scene.add(building);
 
@@ -349,7 +392,7 @@
     scene.add( new THREE.AmbientLight( 0xffffff, 0.4 ) );
 
     // Sun
-    let timeOfDay = 8;
+    let timeOfDay = 9;
     let sunAngle = Math.PI*timeOfDay/10;
     scene = insertDirectionalLight(scene, "sun", 0, 5000*Math.sin(sunAngle), -5000*Math.cos(sunAngle), 0xffffaa);
 
@@ -432,7 +475,7 @@
     plane.noCast = true;
     plane.name = "cityFloor";
 
-    scene.add(plane);
+   scene.add(plane);
 
     // Buildings
 
@@ -442,10 +485,10 @@
         let heightNew = 50 + Math.abs(maxHeight*Math.sin(x+z));
 
           if(heightOld>threshold && heightOld < maxHeight && z>=0) {
-            //scene = insertBuilding(scene, x+square*(Math.random()-Math.random())/1.5, z+square*(Math.random()-Math.random())/1.5, heightOld, 'old');
+            scene = insertBuilding(scene, x+square*(Math.random()-Math.random())/1.5, z+square*(Math.random()-Math.random())/1.5, heightOld, 'old');
           }
           else if(z<=0 && Math.abs(z)<=600 && Math.abs(x)<=400 && Math.abs(z)>=meadowWidth) {
-            //scene = insertBuilding(scene, x, z, heightNew, 'new');
+            scene = insertBuilding(scene, x, z, heightNew, 'new');
           }
           else if(Math.abs(x)==Math.abs(z) && Math.abs(x)>140) {
             //scene = insertGalleryModule(scene, x, z, square*0.5, square*1.415);
@@ -454,12 +497,9 @@
       }
 
 
-        scene = insertBuilding(scene, 0, meadowWidth/2 + square/2, 50, 'old');
+        scene = insertBuilding(scene, 50, meadowWidth/2 + square/2, 50, 'old');
 
-
-
-
-    scene = insertMeadow(scene, 0, 0, meadowWidth, meadowLength);
+        scene = insertMeadow(scene, 0, 0, meadowWidth, meadowLength);
 
     scene.traverse( function( child ) {
         if(child.isMesh) {
@@ -506,7 +546,8 @@
    // let heatMap = transformToHeatMap(shadowRecord, 10, 10, -meadowWidth/2, meadowWidth/2, -meadowLength/2, meadowLength/2);
    // let diffMap = diffMatrix(shadowRecord);
     
-    console.log(shadowRecord);
+   // console.log(shadowRecord);
+    
     
     var data = [
     {
@@ -527,19 +568,20 @@
 
   Plotly.newPlot('heatMap', data, layout);
       
+var axesHelper = new THREE.AxesHelper( 100 );
+scene.add( axesHelper );
 
     // Fog
     // scene.fog = new THREE.Fog(0x444444, 300, 900);
 
     // animation
     function animate() {
-
         requestAnimationFrame(animate);
         controls.update();
         renderer.render(scene, camera);
-
     };
 
     animate();
+    
 
 }());
