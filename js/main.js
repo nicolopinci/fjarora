@@ -410,7 +410,7 @@
     knot.position.y = RADIUS;
     knot.name = "knot";
 
-    //scene.add(knot); 
+    scene.add(knot); 
 
     // Ground
 
@@ -453,7 +453,7 @@
         let heightNew = 50 + Math.abs(maxHeight*Math.sin(x+z));
 
           if(heightOld>threshold && heightOld < maxHeight && z>=0) {
-            //scene = insertBuilding(scene, x+square*(Math.random()-Math.random())/1.5, z+square*(Math.random()-Math.random())/1.5, heightOld, 'old');
+            scene = insertBuilding(scene, x+square*(Math.random()-Math.random())/1.5, z+square*(Math.random()-Math.random())/1.5, heightOld, 'old');
           }
           else if(z<=0 && Math.abs(z)<=600 && Math.abs(x)<=400 && Math.abs(z)>=meadowWidth) {
             scene = insertBuilding(scene, x, z, heightNew, 'new');
@@ -656,121 +656,91 @@
 
 function computeVisibility() {
 
+let landmark = undefined;
+let landmarkX = undefined;
+let landmarkZ = undefined;
+let landmarkHeight = undefined;
+let buildings = [];
+let posMap = [];
+let cumulativeMap = [];
 
-                        
-  let landmarks = [];
-  let buildings = [];
-  let visibilityMap = [];
-  
-  for(let i=0; i<scene.children.length; ++i) {
+for(let i=0; i<scene.children.length; ++i) {
     if(scene.children[i].name.includes("landmark")) {
-      landmarks.push(scene.children[i]);
+      landmark = scene.children[i];
     }
     if(scene.children[i].name.includes("building")) {
-            buildings.push(scene.children[i]);
+      buildings.push(scene.children[i]);
     }
   }
-  let first = true;
-  for(let i=0; i<scene.children.length; ++i) {
-    if(scene.children[i].name.includes("building")) {
-      let x = scene.children[i].position.x;
-      let z = scene.children[i].position.z;
-      let height = 2*scene.children[i].position.y;
-      let countIntersections = 0;
+ 
+  
+  landmarkX = landmark.position.x;
+  landmarkZ = landmark.position.z;
+  landmarkHeight = 2*landmark.position.y;
+  
+  for(let h=0; h<landmarkHeight; h+=resolution) {
+    for(let theta=0; theta<360; theta+=0.1) {
+      let rc = new THREE.Raycaster();
+      rc.set(new THREE.Vector3(landmarkX, h, landmarkZ), new THREE.Vector3(Math.sin(theta*Math.PI/180), 0, Math.cos(theta*Math.PI/180)).normalize());
+              
+      rc.near = 0;
+      rc.far = Infinity;
+              
+      let intersects = rc.intersectObjects(buildings, true);
       
-      for(let h=0; h<height; h+=resolution) {
-
-        for(let theta=0; theta<360; theta+=1) {
-                                scene.updateMatrixWorld();
-
-         
-              let rc = new THREE.Raycaster();
-
-              rc.set(new THREE.Vector3(x, h, z), new THREE.Vector3(Math.sin(theta*Math.PI/180), 0, Math.cos(theta*Math.PI/180)).normalize());
-              
-              rc.near = 0;
-              rc.far = Infinity;
-              
-              let intersects = rc.intersectObjects(buildings, true);
-              
-             
-              
-              /*if(intersects.length > 0 && intersects[0].object.name.includes("landmark")) {
-         
-              
-                              var pointA = new THREE.Vector3(x, h, z);
-                  var direction = new THREE.Vector3(Math.sin(theta*Math.PI/180), 0, Math.cos(theta*Math.PI/180));
-                  direction.normalize();
-
-                  var distance = 800; // at what distance to determine pointB
-
-                  var pointB = new THREE.Vector3();
-                  pointB.addVectors ( pointA, direction.multiplyScalar( distance ) );
-
-                  var geometry = new THREE.Geometry();
-                  geometry.vertices.push( pointA );
-                  geometry.vertices.push( pointB );
-                  var material = new THREE.LineBasicMaterial( { color : 0xff0000 } );
-                  var line = new THREE.Line( geometry, material );
-                  scene.add( line );
-                }*/
-                
-                
-               if(intersects.length > 0) {            
-                   
-                    if(intersects[0].object.name.includes("landmark")) {
-                      countIntersections += 1;
-                    }
-                    
-                      if(intersects[0].object.name.includes("landmark")) {
-             // console.log(intersects);
-              first = false;
-              
-              
-              
-               var pointA = new THREE.Vector3(x, h, z);
-                  var direction = new THREE.Vector3(Math.sin(theta*Math.PI/180), 0, Math.cos(theta*Math.PI/180));
-                  direction.normalize();
-
-                  var distance = 800; // at what distance to determine pointB
-
-                  var pointB = new THREE.Vector3();
-                  pointB.addVectors ( pointA, direction.multiplyScalar( distance ) );
-
-                  var geometry = new THREE.Geometry();
-                  geometry.vertices.push( pointA );
-                  geometry.vertices.push( pointB );
-                  var material = new THREE.LineBasicMaterial( { color : 0xff0000 } );
-                  var line = new THREE.Line( geometry, material );
-                  scene.add( line );
-                  
-                  
-              }
-                   
-                    
-              }
+      if(intersects.length > 0) {
+        let closest = intersects[0];
+        
+        posMap.push({"x": intersects[0].object.position.x, "z": intersects[0].object.position.z});
+            
       }
-      }
-      
-      if(countIntersections > 0) {
+    }
+  }
+  
+  for(let f=0; f<posMap.length; ++f) {
+    let insertionIndex = isThere(cumulativeMap, posMap[f].x, posMap[f].z);
+    if(insertionIndex >= cumulativeMap.length) {
+      cumulativeMap.push({"x": posMap[f].x, "z": posMap[f].z, "tot": 1});
+    }
+    else {
+      cumulativeMap[insertionIndex].tot += 1;
+    }
+  }
+  drawMarkers(cumulativeMap);
+  return cumulativeMap;
+}
+
+function drawMarkers(map) {
+
+  let correction = 1;
+  for(let m=0; m<map.length; ++m) {
+    if(map[m].tot > correction) {
+      correction = map[m].tot;
+    }
+  }
+  
+  correction = 255/correction;
+  
+  for(let m=0; m<map.length; ++m) {
         var geometry = new THREE.ConeGeometry( 5, 20, 32 );
-        var material = new THREE.MeshBasicMaterial( {color: "rgb("+countIntersections*20 +", 102, 102)"} );
+        var material = new THREE.MeshBasicMaterial( {color: "rgb("+Math.floor(map[m].tot/correction) +", 102, 102)"} );
         var marker = new THREE.Mesh( geometry, material );
-        marker.position.x = x;
-        marker.position.z = z;
-        marker.position.y = height + 30;
+        marker.position.x = map[m].x;
+        marker.position.z = map[m].z;
+        marker.position.y = 80;
         marker.rotation.x = Math.PI;
         scene.add(marker);
-        
-       
-        
-      }
-      visibilityMap.push({"x": x, "z": z, "tot": countIntersections}); 
-      //allBuildings.push(scene.children[i]);
+    }    
+}
+
+function isThere(map, x, z) {
+  for(let i=0; i<map.length; ++i) {
+
+    if(map[i].x == x && map[i].z == z) {
+      return i;
     }
   }
-  
-  return visibilityMap;
+  return map.length;
 }
 
 }());
