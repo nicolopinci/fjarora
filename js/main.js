@@ -578,8 +578,8 @@
     b: 25,
     t: 40,
     pad: 2 },
-    //xaxis: {visible: false},
-    //yaxis: {visible: false},
+    xaxis: {visible: false},
+    yaxis: {visible: false},
     title: "Visibility map"
   };
 
