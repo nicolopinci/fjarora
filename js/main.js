@@ -484,6 +484,7 @@
     // Calculate amount of shadow
     scene.updateMatrixWorld();
     let shadowRecord = calculateShadowRecord(Math.PI/10, resolution, resolution, -meadowWidth/2, meadowWidth/2, -meadowLength/2, meadowLength/2, scene);
+    let D = diffMatrix(shadowRecord);
     
     
     var data = [
@@ -493,17 +494,43 @@
     }
   ];
 
-  var layout = {
+
+    
+    var diffD = [
+    {
+      z: obtainDataHeat(fjaroraEnv.timeOfDay, D, -meadowWidth/2, -meadowLength/2, meadowWidth/2, meadowLength/2, resolution, resolution),
+      type: 'heatmap'
+    }
+  ];
+    
+    
+  var layoutHM = {
   margin: {
     l: 25,
     r: 25,
     b: 25,
-    t: 25,
-    pad: 4
-  }
-};
+    t: 40,
+    pad: 20
+    },
+    xaxis: {visible: false},
+    yaxis: {visible: false},
+    title: "Heat map"
+  };
+  
+   var layoutCFH = {
+  margin: {
+    l: 25,
+    r: 25,
+    b: 25,
+    t: 40,
+    pad: 2 },
+    xaxis: {visible: false},
+    yaxis: {visible: false},
+    title: "CFH"
+  };
 
-  Plotly.newPlot('heatMap', data, layout);
+  Plotly.newPlot('heatMap', data, layoutHM);
+    Plotly.newPlot('difference', diffD, layoutCFH);
       
 
     var gui = new dat.GUI();
@@ -535,18 +562,40 @@
       type: 'heatmap'
     }
   ];
+  
+      var diffD = [
+    {
+      z: obtainDataHeat(fjaroraEnv.timeOfDay, D, -meadowWidth/2, -meadowLength/2, meadowWidth/2, meadowLength/2, resolution, resolution),
+      type: 'heatmap'
+    }
+  ];
 
-  var layout = {
+  var layoutHM = {
   margin: {
     l: 25,
     r: 25,
     b: 25,
-    t: 25,
-    pad: 4
-  }
-};
+    t: 40,
+    pad: 2 },
+    xaxis: {visible: false},
+    yaxis: {visible: false},
+    title: "Heat map"
+  };
+  
+   var layoutCFH = {
+  margin: {
+    l: 25,
+    r: 25,
+    b: 25,
+    t: 40,
+    pad: 2 },
+    xaxis: {visible: false},
+    yaxis: {visible: false},
+    title: "CFH"
+  };
 
-  Plotly.newPlot('heatMap', data, layout);
+  Plotly.newPlot('heatMap', data, layoutHM);
+  Plotly.newPlot('difference', diffD, layoutCFH);
 }
 
 
