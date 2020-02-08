@@ -655,15 +655,22 @@
 
 
 function computeVisibility() {
+
+
+                        
   let landmarks = [];
+  let buildings = [];
   let visibilityMap = [];
   
   for(let i=0; i<scene.children.length; ++i) {
     if(scene.children[i].name.includes("landmark")) {
       landmarks.push(scene.children[i]);
     }
+    if(scene.children[i].name.includes("building")) {
+            buildings.push(scene.children[i]);
+    }
   }
-      
+  let first = true;
   for(let i=0; i<scene.children.length; ++i) {
     if(scene.children[i].name.includes("building")) {
       let x = scene.children[i].position.x;
@@ -673,40 +680,72 @@ function computeVisibility() {
       
       for(let h=0; h<height; h+=resolution) {
 
-        for(let theta=0; theta<360; theta+=30) {
-                    scene.updateMatrixWorld();
-         let rc = new THREE.Raycaster();
+        for(let theta=0; theta<360; theta+=2) {
+                                scene.updateMatrixWorld();
+
+         
+              let rc = new THREE.Raycaster();
 
               rc.set(new THREE.Vector3(x, h, z), new THREE.Vector3(Math.sin(theta*Math.PI/180), 0, Math.cos(theta*Math.PI/180)).normalize());
               
               rc.near = 0;
               rc.far = Infinity;
-   
-   
-               // Draw a line from pointA in the given direction at distance 100
-                /*var pointA = new THREE.Vector3(x, h, z);
-                var direction = new THREE.Vector3(Math.sin(theta*Math.PI/180), 0, Math.cos(theta*Math.PI/180));
-                direction.normalize();
+              
+              let intersects = rc.intersectObjects(buildings, true);
+              
+             
+              
+              /*if(intersects.length > 0 && intersects[0].object.name.includes("landmark")) {
+         
+              
+                              var pointA = new THREE.Vector3(x, h, z);
+                  var direction = new THREE.Vector3(Math.sin(theta*Math.PI/180), 0, Math.cos(theta*Math.PI/180));
+                  direction.normalize();
 
-                var distance = 100; // at what distance to determine pointB
+                  var distance = 800; // at what distance to determine pointB
 
-                var pointB = new THREE.Vector3();
-                pointB.addVectors ( pointA, direction.multiplyScalar( distance ) );
+                  var pointB = new THREE.Vector3();
+                  pointB.addVectors ( pointA, direction.multiplyScalar( distance ) );
 
-                var geometry = new THREE.Geometry();
-                geometry.vertices.push( pointA );
-                geometry.vertices.push( pointB );
-                var material = new THREE.LineBasicMaterial( { color : 0xff0000 } );
-                var line = new THREE.Line( geometry, material );
-                scene.add( line );*/
-    
-    
-              let intersects = rc.intersectObjects(landmarks, true);
+                  var geometry = new THREE.Geometry();
+                  geometry.vertices.push( pointA );
+                  geometry.vertices.push( pointB );
+                  var material = new THREE.LineBasicMaterial( { color : 0xff0000 } );
+                  var line = new THREE.Line( geometry, material );
+                  scene.add( line );
+                }*/
+                
+                
                if(intersects.length > 0) {            
                    
                     if(intersects[0].object.name.includes("landmark")) {
                       countIntersections += 1;
                     }
+                    
+                      if(intersects.length > 0) {
+              console.log(intersects);
+              first = false;
+              
+              
+              
+               var pointA = new THREE.Vector3(x, h, z);
+                  var direction = new THREE.Vector3(Math.sin(theta*Math.PI/180), 0, Math.cos(theta*Math.PI/180));
+                  direction.normalize();
+
+                  var distance = 800; // at what distance to determine pointB
+
+                  var pointB = new THREE.Vector3();
+                  pointB.addVectors ( pointA, direction.multiplyScalar( distance ) );
+
+                  var geometry = new THREE.Geometry();
+                  geometry.vertices.push( pointA );
+                  geometry.vertices.push( pointB );
+                  var material = new THREE.LineBasicMaterial( { color : 0xff0000 } );
+                  var line = new THREE.Line( geometry, material );
+                  scene.add( line );
+                  
+                  
+              }
                    
                     
               }
@@ -722,6 +761,8 @@ function computeVisibility() {
         marker.position.y = height + 30;
         marker.rotation.x = Math.PI;
         scene.add(marker);
+        
+       
         
       }
       visibilityMap.push({"x": x, "z": z, "tot": countIntersections}); 
