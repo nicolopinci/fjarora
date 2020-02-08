@@ -9,6 +9,8 @@
   const meadowWidth = 200;
   const meadowLength = 200;
   
+  let cumulativeMap = [];
+  
 (function () {
 
 
@@ -359,6 +361,7 @@
 
     var fjaroraEnv = new function() {
         this.timeOfDay = 1;
+        this.showMarkers = false;
     }
     // Sun
     let sunAngle = Math.PI*fjaroraEnv.timeOfDay/10;
@@ -583,11 +586,13 @@
 
     var gui = new dat.GUI();
 
-    var sunPos = gui.addFolder('Fjarora environment');
-    var currentTime = sunPos.add(fjaroraEnv, 'timeOfDay', 0, 10).step(1).listen();
-    sunPos.open();
+    var fjEn = gui.addFolder('Fjarora environment');
+    var currentTime = fjEn.add(fjaroraEnv, 'timeOfDay', 0, 10).step(1).listen();
+    var showMarkers = fjEn.add(fjaroraEnv, 'showMarkers').listen();
+    fjEn.open();
 
     currentTime.onChange(updateLight);
+    showMarkers.onChange(drawMarkers);
     // Fog
     // scene.fog = new THREE.Fog(0x444444, 300, 900);
 
@@ -662,7 +667,7 @@ let landmarkZ = undefined;
 let landmarkHeight = undefined;
 let buildings = [];
 let posMap = [];
-let cumulativeMap = [];
+cumulativeMap = [];
 
 for(let i=0; i<scene.children.length; ++i) {
     if(scene.children[i].name.includes("landmark")) {
@@ -706,31 +711,48 @@ for(let i=0; i<scene.children.length; ++i) {
       cumulativeMap[insertionIndex].tot += 1;
     }
   }
-  drawMarkers(cumulativeMap);
+  
+  
+  //drawMarkers(cumulativeMap);
+  
   return cumulativeMap;
 }
 
-function drawMarkers(map) {
+function drawMarkers() {
 
-  let correction = 1;
-  for(let m=0; m<map.length; ++m) {
-    if(map[m].tot > correction) {
-      correction = map[m].tot;
+  if(this.__checkbox == undefined || this.__checkbox.checked == true) {
+    let correction = 1;
+    for(let m=0; m<cumulativeMap.length; ++m) {
+      if(cumulativeMap[m].tot > correction) {
+        correction = cumulativeMap[m].tot;
+      }
     }
-  }
+    
+    correction = 255/correction;
   
-  correction = 255/correction;
-  
-  for(let m=0; m<map.length; ++m) {
+      for(let m=0; m<cumulativeMap.length; ++m) {
         var geometry = new THREE.ConeGeometry( 5, 20, 32 );
-        var material = new THREE.MeshBasicMaterial( {color: "rgb("+Math.floor(map[m].tot/correction) +", 102, 102)"} );
+        var material = new THREE.MeshBasicMaterial( {color: "rgb("+Math.floor(cumulativeMap[m].tot/correction) +", 102, 102)"} );
         var marker = new THREE.Mesh( geometry, material );
-        marker.position.x = map[m].x;
-        marker.position.z = map[m].z;
+        marker.position.x = cumulativeMap[m].x;
+        marker.position.z = cumulativeMap[m].z;
         marker.position.y = 80;
         marker.rotation.x = Math.PI;
+        marker.name = "marker";
         scene.add(marker);
-    }    
+    }  
+    }
+    else {
+      while(scene.getObjectByName("marker")) {
+        scene.remove(scene.getObjectByName("marker"));
+      }
+      
+      /*for(let s=0; s<scene.children.length; ++s) {
+        if(scene.children[s].name == "marker") {
+          scene.remove(scene.children[s]);
+        }
+      }*/
+    }  
 }
 
 function isThere(map, x, z) {
