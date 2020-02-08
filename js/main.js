@@ -25,8 +25,35 @@
       heatData.push(currentX);
     }
     
+
     return heatData;
   }
+  
+  function obtainVisHeat(map, xStep, zStep) {
+    
+    let heatData = [];
+    
+    for(let x=-halfside; x<=halfside; x+=xStep) {
+      let currentX = [];
+      for(let z=-halfside; z<=halfside; z+=zStep) {
+        let count = getScore(map, x, z, xStep, zStep);
+        currentX.push(count);
+      }
+      heatData.push(currentX);
+    }
+    
+    return heatData;
+  }
+  
+  function getScore(map, x, z, xStep, zStep) {
+    for(let k=0; k<map.length; ++k) {
+      if(Math.floor(map[k].x/xStep)*xStep == x && Math.floor(map[k].z/zStep)*zStep == z) {
+        return map[k].tot;
+      }
+    }
+    return 0;
+  }
+ 
 
   function insertPointLight(scene, name, x, y, z, color, intensity, distance, decay) {
     const pointLight = new THREE.PointLight(color, intensity, distance, decay);
@@ -211,7 +238,7 @@
         var buildingTexture = [];
         var bumpTexture = [];
 
-        if(age == 'old') {
+        if(age.includes('old')) {
           buildingTexture[0] = new THREE.TextureLoader().load('https://nicolopinci.github.io/fjarora/js/img/brick001.jpg');
           buildingTexture[1] = new THREE.TextureLoader().load('https://nicolopinci.github.io/fjarora/js/img/brick002.jpg');
           buildingTexture[2] = new THREE.TextureLoader().load('https://nicolopinci.github.io/fjarora/js/img/brick003.jpg');
@@ -269,7 +296,7 @@
                   bumpMap: concreteBump,
                 });
 
-    if(age == 'old') {
+    if(age.includes('old')) {
     var building = new THREE.Mesh(new THREE.BoxGeometry(CWIDTH, height, DEPTH), oldMaterial);
   }
   else {
@@ -284,7 +311,7 @@
 
     scene.add(building);
 
-    if(age == 'old') {
+    if(age.includes('old')) {
       const EDGES = 4;
       const OUTROOF = 0.2;
       const HEIGHT = 2;
@@ -307,7 +334,7 @@
       cone.position.y = height + HEIGHT/2;
       cone.rotation.y = Math.PI/4 + building.rotation.y;
       cone.name = "roof";
-      scene.add( cone );
+      scene.add(cone);
 
     }
     return scene;
@@ -383,7 +410,7 @@
     knot.position.y = RADIUS;
     knot.name = "knot";
 
-    scene.add(knot); 
+    //scene.add(knot); 
 
     // Ground
 
@@ -426,7 +453,7 @@
         let heightNew = 50 + Math.abs(maxHeight*Math.sin(x+z));
 
           if(heightOld>threshold && heightOld < maxHeight && z>=0) {
-            scene = insertBuilding(scene, x+square*(Math.random()-Math.random())/1.5, z+square*(Math.random()-Math.random())/1.5, heightOld, 'old');
+            //scene = insertBuilding(scene, x+square*(Math.random()-Math.random())/1.5, z+square*(Math.random()-Math.random())/1.5, heightOld, 'old');
           }
           else if(z<=0 && Math.abs(z)<=600 && Math.abs(x)<=400 && Math.abs(z)>=meadowWidth) {
             scene = insertBuilding(scene, x, z, heightNew, 'new');
@@ -438,7 +465,7 @@
       }
 
 
-        scene = insertBuilding(scene, 50, meadowWidth/2 + square/2, 50, 'old');
+        scene = insertBuilding(scene, 50, meadowWidth/2 + square/2, 50, 'landmark_old');
 
         scene = insertMeadow(scene, 0, 0, meadowWidth, meadowLength);
 
@@ -502,6 +529,15 @@
       type: 'heatmap'
     }
   ];
+  
+
+  
+  var visMap = [
+    {
+      z: obtainVisHeat(computeVisibility(), resolution, resolution),
+      type: 'heatmap'
+    }
+  ];
     
     
   var layoutHM = {
@@ -510,7 +546,7 @@
     r: 25,
     b: 25,
     t: 40,
-    pad: 20
+    pad: 2
     },
     xaxis: {visible: false},
     yaxis: {visible: false},
@@ -528,10 +564,22 @@
     yaxis: {visible: false},
     title: "CFH"
   };
+  
+    var layoutVis = {
+  margin: {
+    l: 25,
+    r: 25,
+    b: 25,
+    t: 40,
+    pad: 2 },
+    //xaxis: {visible: false},
+    //yaxis: {visible: false},
+    title: "Visibility map"
+  };
 
   Plotly.newPlot('heatMap', data, layoutHM);
     Plotly.newPlot('difference', diffD, layoutCFH);
-      
+          Plotly.newPlot('visibility', visMap, layoutVis);
 
     var gui = new dat.GUI();
 
@@ -569,6 +617,9 @@
       type: 'heatmap'
     }
   ];
+  
+  
+  
 
   var layoutHM = {
   margin: {
@@ -593,10 +644,92 @@
     yaxis: {visible: false},
     title: "CFH"
   };
+  
+
 
   Plotly.newPlot('heatMap', data, layoutHM);
   Plotly.newPlot('difference', diffD, layoutCFH);
+
+
 }
 
+
+function computeVisibility() {
+  let landmarks = [];
+  let visibilityMap = [];
+  
+  for(let i=0; i<scene.children.length; ++i) {
+    if(scene.children[i].name.includes("landmark")) {
+      landmarks.push(scene.children[i]);
+    }
+  }
+      
+  for(let i=0; i<scene.children.length; ++i) {
+    if(scene.children[i].name.includes("building")) {
+      let x = scene.children[i].position.x;
+      let z = scene.children[i].position.z;
+      let height = 2*scene.children[i].position.y;
+      let countIntersections = 0;
+      
+      for(let h=0; h<height; h+=resolution) {
+
+        for(let theta=0; theta<360; theta+=30) {
+                    scene.updateMatrixWorld();
+         let rc = new THREE.Raycaster();
+
+              rc.set(new THREE.Vector3(x, h, z), new THREE.Vector3(Math.sin(theta*Math.PI/180), 0, Math.cos(theta*Math.PI/180)).normalize());
+              
+              rc.near = 0;
+              rc.far = Infinity;
+   
+   
+               // Draw a line from pointA in the given direction at distance 100
+                var pointA = new THREE.Vector3(x, h, z);
+                var direction = new THREE.Vector3(Math.sin(theta*Math.PI/180), 0, Math.cos(theta*Math.PI/180));
+                direction.normalize();
+
+                var distance = 100; // at what distance to determine pointB
+
+                var pointB = new THREE.Vector3();
+                pointB.addVectors ( pointA, direction.multiplyScalar( distance ) );
+
+                var geometry = new THREE.Geometry();
+                geometry.vertices.push( pointA );
+                geometry.vertices.push( pointB );
+                var material = new THREE.LineBasicMaterial( { color : 0xff0000 } );
+                var line = new THREE.Line( geometry, material );
+                scene.add( line );
+    
+    
+              let intersects = rc.intersectObjects(landmarks, true);
+               if(intersects.length > 0) {            
+                   
+                    if(intersects[0].object.name.includes("landmark")) {
+                      countIntersections += 1;
+                    }
+                   
+                    
+              }
+      }
+      }
+      
+      if(countIntersections > 0) {
+        var geometry = new THREE.ConeGeometry( 5, 20, 32 );
+        var material = new THREE.MeshBasicMaterial( {color: "rgb("+countIntersections*20 +", 102, 102)"} );
+        var marker = new THREE.Mesh( geometry, material );
+        marker.position.x = x;
+        marker.position.z = z;
+        marker.position.y = height + 30;
+        marker.rotation.x = Math.PI;
+        scene.add(marker);
+        
+      }
+      visibilityMap.push({"x": x, "z": z, "tot": countIntersections}); 
+      //allBuildings.push(scene.children[i]);
+    }
+  }
+  
+  return visibilityMap;
+}
 
 }());
