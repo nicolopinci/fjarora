@@ -51,7 +51,7 @@
 
   function selectOccForTime(t, x, z, shadowRecord) {
      for(let i=0; i<shadowRecord.length; ++i) {
-       if(shadowRecord[i].time == t && shadowRecord[i].x == x && shadowRecord[i].z == z) {
+       if(shadowRecord[i].time == t && Math.floor(shadowRecord[i].x/5)*5 == x && Math.floor(shadowRecord[i].z/5)*5 == z) {
          return 1;
        }
      }
@@ -60,94 +60,31 @@
 
   function calculateShadowRecord(timeStep, hStep, dStep, hStart, hEnd, dStart, dEnd, scene) {
 
-
       let shadowCasters = [];
-
       for(let i=0; i<scene.children.length; ++i) {
-        //console.log(scene.children[i]);
         if(scene.children[i].castShadow) {
-          
           shadowCasters.push(scene.children[i]);
         }
       }
 
-      
-      
       let shadowMapOverTime = [];
 
       for(let ps=0; ps<=Math.PI; ps+=timeStep) {
         for(let h=hStart; h<=hEnd; h+=hStep) {
           for(let d=dStart; d<=dEnd; d+=dStep) {
-          //console.log(h + " - " + d);
-              
-              //let rc = new THREE.Raycaster(new THREE.Vector3(h, 0.1, d), new THREE.Vector3(0, Math.sin(ps), -Math.cos(ps)).normalize());
+          
               let rc = new THREE.Raycaster();
 
               rc.set(new THREE.Vector3(h, 0, d), new THREE.Vector3(0, Math.sin(ps), -Math.cos(ps)).normalize());
               
-              // rc.set(new THREE.Vector3(h, 0, d), new THREE.Vector3(0, Math.sin(0.1*Math.PI), -Math.cos(0.1*Math.PI)).normalize());
-              /*let ortCamera = new THREE.OrthographicCamera(-5000, 5000, -5000, 5000, 0.01, 10000);
-              rc.setFromCamera(new THREE.Vector3(h, 0.1, d), ortCamera);*/
-              
-              // let rc = new THREE.Raycaster(new THREE.Vector3(0, 5000*(h+Math.sin(sunAngle)), -5000*(d+Math.cos(sunAngle))), new THREE.Vector3(0, -Math.sin(ps), Math.cos(ps)).normalize());
-              
-              //console.log(ps + " --> (" + Math.sin(ps) + ", -" + Math.cos(ps));
               rc.near = 0;
               rc.far = Infinity;
-
+   
               let intersects = rc.intersectObjects(shadowCasters, true);
-              
-              //if(intersects.length > 0) {
-                   //console.log(h + ", " + d);
-                   //console.log(rc);  
-
-                  
-               if(intersects.length > 0) {
-               
-
-                                    
-                   for(let p=0; p<intersects.length; ++p) {
-                      
-                     //console.log(intersects);
-                     let objPosX = intersects[p].object.position.x;
-                     let objPosZ = intersects[p].object.position.z - intersects[p].distance*Math.cos(ps*timeStep);
-                     //let objPosZ = intersects[p].object.position.z+90; // +intersects[p].object.geometry.height/Math.tan(ps*timeStep);
-                   
-
-                  
-                      //console.log(h+ ", " +d);
-                      if(h+objPosX<=hEnd && h+objPosX>=hStart && d+objPosZ<=dEnd && d+objPosZ>=dStart) {
-
-                     shadowMapOverTime.push({time: ps/timeStep, x: h+objPosX, z: d+objPosZ});
-               // console.log(objPosZ);
-                //objPosX = 0;
-//objPosZ = 110;
-                
-
-                               
-                    //console.log(intersects);
-                  if(ps==9*timeStep) {
-                 var pointA = new THREE.Vector3(h+objPosX, 0, d+objPosZ);
-                  var direction = new THREE.Vector3(0, Math.sin(ps), -Math.cos(ps));
-                  direction.normalize();
-
-                  var distance = 300; 
-
-                  var pointB = new THREE.Vector3();
-                  pointB.addVectors ( pointA, direction.multiplyScalar( distance ) );
-
-                  var geometry = new THREE.Geometry();
-                  geometry.vertices.push( pointA );
-                  geometry.vertices.push( pointB );
-                  var material = new THREE.LineBasicMaterial( { color : 0xff0000 } );
-                  var line = new THREE.Line( geometry, material );
-                  scene.add( line );
-                }
-                }
-               
-                
-                }
-         
+               if(intersects.length > 0) {            
+                    for(let p=0; p<intersects.length; ++p) {                      
+                      shadowMapOverTime.push({time: ps/timeStep, x: h, z: d}); 
+                    }
               }
           }
         }
@@ -155,27 +92,27 @@
       return shadowMapOverTime;
   }
 
-  function transformToHeatMap(shadowRecord, hStep, dStep, hStart, hEnd, dStart, dEnd) {
-    let numH = (hEnd - hStart)/hStep;
+  /*function transformToHeatMap(shadowRecord, hStep, dStep, hStart, hEnd, dStart, dEnd) {
+    /*let numH = (hEnd - hStart)/hStep;
     let numD = (dEnd - dStart)/dStep;
 
     let heatMap = [];
 
-    for(let i=hStart; i<=hEnd; i+=hStep) {
+    for(let i=-100; i<=100; i+=5) {
       let zeroArray = [];
-      for(let j=dStart; j<=dEnd; j+=dStep) {
+      for(let j=-100; j<=100; j+=5) {
         zeroArray.push(0);
       }
       heatMap.push(zeroArray);
     }
 
     for(let r=0; r<shadowRecord.length; ++r) {
-      let x = (-hStart + shadowRecord[r].x)/hStep;
-      let z = (-dStart + shadowRecord[r].z)/dStep;
+      let x = Math.floor((100 + shadowRecord[r].x)/5);
+      let z = Math.floor((100 + shadowRecord[r].z)/5);
       heatMap[x][z] += 1;
     }
     return heatMap;
-  }
+  }*/
 
   function diffMatrix(shadowRecord) {
     let diffMap = [];
@@ -392,7 +329,7 @@
     scene.add( new THREE.AmbientLight( 0xffffff, 0.4 ) );
 
     // Sun
-    let timeOfDay = 9;
+    let timeOfDay = 1;
     let sunAngle = Math.PI*timeOfDay/10;
     scene = insertDirectionalLight(scene, "sun", 0, 5000*Math.sin(sunAngle), -5000*Math.cos(sunAngle), 0xffffaa);
 
@@ -427,7 +364,7 @@
 
 
     // Knot sculpture
-   /* const knotMaterial =
+   const knotMaterial =
       new THREE.MeshPhongMaterial(
         {
           color: 0xadd8e6,
@@ -442,7 +379,7 @@
     knot.position.y = RADIUS;
     knot.name = "knot";
 
-    scene.add(knot); */
+    scene.add(knot); 
 
     // Ground
 
@@ -542,11 +479,8 @@
     let resolution = 5;
     
     // Calculate amount of shadow
+    scene.updateMatrixWorld();
     let shadowRecord = calculateShadowRecord(Math.PI/10, resolution, resolution, -meadowWidth/2, meadowWidth/2, -meadowLength/2, meadowLength/2, scene);
-   // let heatMap = transformToHeatMap(shadowRecord, 10, 10, -meadowWidth/2, meadowWidth/2, -meadowLength/2, meadowLength/2);
-   // let diffMap = diffMatrix(shadowRecord);
-    
-   // console.log(shadowRecord);
     
     
     var data = [
