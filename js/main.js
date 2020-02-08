@@ -722,8 +722,8 @@ function computeVisibility() {
                       countIntersections += 1;
                     }
                     
-                      if(intersects.length > 0) {
-              console.log(intersects);
+                      if(intersects[0].object.name.includes("landmark")) {
+             // console.log(intersects);
               first = false;
               
               
