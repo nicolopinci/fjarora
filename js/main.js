@@ -684,7 +684,7 @@ function computeVisibility() {
    
    
                // Draw a line from pointA in the given direction at distance 100
-                var pointA = new THREE.Vector3(x, h, z);
+                /*var pointA = new THREE.Vector3(x, h, z);
                 var direction = new THREE.Vector3(Math.sin(theta*Math.PI/180), 0, Math.cos(theta*Math.PI/180));
                 direction.normalize();
 
@@ -698,7 +698,7 @@ function computeVisibility() {
                 geometry.vertices.push( pointB );
                 var material = new THREE.LineBasicMaterial( { color : 0xff0000 } );
                 var line = new THREE.Line( geometry, material );
-                scene.add( line );
+                scene.add( line );*/
     
     
               let intersects = rc.intersectObjects(landmarks, true);
