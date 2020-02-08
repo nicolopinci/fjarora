@@ -1,3 +1,14 @@
+    var scene = new THREE.Scene();
+    let resolution = 5;
+      const halfside = 750;
+  const square = 60;
+  const minHeight = 10;
+  const threshold = 10.5;
+  const maxHeight = 15;
+
+  const meadowWidth = 200;
+  const meadowLength = 200;
+  
 (function () {
 
 
@@ -304,17 +315,8 @@
 
 
 
-  const halfside = 750;
-  const square = 60;
-  const minHeight = 10;
-  const threshold = 10.5;
-  const maxHeight = 15;
-
-  const meadowWidth = 200;
-  const meadowLength = 200;
 
     // Scene
-    var scene = new THREE.Scene();
     scene.background = new THREE.Color(0x87ceeb);
 
     // Camera
@@ -323,14 +325,16 @@
     camera.lookAt(0, 0, 0);
 
     // Orbit Controls
-    var controls = new THREE.OrbitControls(camera);
+    var controls = new THREE.OrbitControls(camera, document.querySelector("#demo"));
 
     // Ambient light
     scene.add( new THREE.AmbientLight( 0xffffff, 0.4 ) );
 
+    var fjaroraEnv = new function() {
+        this.timeOfDay = 1;
+    }
     // Sun
-    let timeOfDay = 1;
-    let sunAngle = Math.PI*timeOfDay/10;
+    let sunAngle = Math.PI*fjaroraEnv.timeOfDay/10;
     scene = insertDirectionalLight(scene, "sun", 0, 5000*Math.sin(sunAngle), -5000*Math.cos(sunAngle), 0xffffaa);
 
     // Sphere
@@ -476,7 +480,6 @@
     scene.add(skybox);
 
     document.getElementById('demo').appendChild(renderer.domElement);
-    let resolution = 5;
     
     // Calculate amount of shadow
     scene.updateMatrixWorld();
@@ -485,7 +488,7 @@
     
     var data = [
     {
-      z: obtainDataHeat(timeOfDay, shadowRecord, -meadowWidth/2, -meadowLength/2, meadowWidth/2, meadowLength/2, resolution, resolution),
+      z: obtainDataHeat(fjaroraEnv.timeOfDay, shadowRecord, -meadowWidth/2, -meadowLength/2, meadowWidth/2, meadowLength/2, resolution, resolution),
       type: 'heatmap'
     }
   ];
@@ -502,9 +505,14 @@
 
   Plotly.newPlot('heatMap', data, layout);
       
-var axesHelper = new THREE.AxesHelper( 100 );
-scene.add( axesHelper );
 
+    var gui = new dat.GUI();
+
+    var sunPos = gui.addFolder('Fjarora environment');
+    var currentTime = sunPos.add(fjaroraEnv, 'timeOfDay', 0, 10).step(1).listen();
+    sunPos.open();
+
+    currentTime.onChange(updateLight);
     // Fog
     // scene.fog = new THREE.Fog(0x444444, 300, 900);
 
@@ -517,5 +525,29 @@ scene.add( axesHelper );
 
     animate();
     
+    
+    function updateLight() {
+  scene.getObjectByName("sun").position.set(0, 5000*Math.sin(this.object.timeOfDay*Math.PI/10), -5000*Math.cos(this.object.timeOfDay*Math.PI/10));
+  
+  var data = [
+    {
+      z: obtainDataHeat(this.object.timeOfDay, shadowRecord, -meadowWidth/2, -meadowLength/2, meadowWidth/2, meadowLength/2, resolution, resolution),
+      type: 'heatmap'
+    }
+  ];
+
+  var layout = {
+  margin: {
+    l: 25,
+    r: 25,
+    b: 25,
+    t: 25,
+    pad: 4
+  }
+};
+
+  Plotly.newPlot('heatMap', data, layout);
+}
+
 
 }());
