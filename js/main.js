@@ -74,7 +74,7 @@
     //directionalLight.shadowDarkness = 0.1;
     directionalLight.shadow.mapSize.width = 5000;
     directionalLight.shadow.mapSize.height = 5000;
-    directionalLight.shadow.camera.near = 0.01;
+    directionalLight.shadow.camera.near = 0;
     directionalLight.shadow.camera.far = 10000;
     directionalLight.shadow.camera.left = -5000;
     directionalLight.shadow.camera.right = 5000;
@@ -471,7 +471,7 @@
       }
 
 
-        scene = insertBuilding(scene, 50, meadowWidth/2 + square/2, 50, 'landmark_old');
+        scene = insertBuilding(scene, 50, meadowWidth/2 + square/2, 100, 'landmark_old');
 
         scene = insertMeadow(scene, 0, 0, meadowWidth, meadowLength);
 
@@ -580,7 +580,7 @@
     pad: 2 },
     xaxis: {visible: false},
     yaxis: {visible: false},
-    title: "Visibility map"
+    title: "Landmark visibility"
   };
 
   Plotly.newPlot('heatMap', data, layoutHM);
