@@ -680,7 +680,7 @@ function computeVisibility() {
       
       for(let h=0; h<height; h+=resolution) {
 
-        for(let theta=0; theta<360; theta+=2) {
+        for(let theta=0; theta<360; theta+=10) {
                                 scene.updateMatrixWorld();
 
          
