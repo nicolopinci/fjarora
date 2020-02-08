@@ -35,10 +35,10 @@
     
     let heatData = [];
     
-    for(let x=-halfside; x<=halfside; x+=xStep) {
+    for(let x=-halfside; x<=halfside; x+=square/2) {
       let currentX = [];
-      for(let z=-halfside; z<=halfside; z+=zStep) {
-        let count = getScore(map, x, z, xStep, zStep);
+      for(let z=-halfside; z<=halfside; z+=square/2) {
+        let count = getScore(map, x, z, square/2, square/2);
         currentX.push(count);
       }
       heatData.push(currentX);
