@@ -362,6 +362,9 @@
     var fjaroraEnv = new function() {
         this.timeOfDay = 1;
         this.showMarkers = false;
+        this.showHeatmap = true;
+        this.showCFH = true;
+        this.showVisibility = true;
     }
     // Sun
     let sunAngle = Math.PI*fjaroraEnv.timeOfDay/10;
@@ -589,10 +592,16 @@
     var fjEn = gui.addFolder('Fjarora environment');
     var currentTime = fjEn.add(fjaroraEnv, 'timeOfDay', 0, 10).step(1).listen();
     var showMarkers = fjEn.add(fjaroraEnv, 'showMarkers').listen();
+    var showHeatmap = fjEn.add(fjaroraEnv, 'showHeatmap').listen();
+    var showCFH = fjEn.add(fjaroraEnv, 'showCFH').listen();
+    var showVisibility = fjEn.add(fjaroraEnv, 'showVisibility').listen();
     fjEn.open();
 
     currentTime.onChange(updateLight);
     showMarkers.onChange(drawMarkers);
+    showHeatmap.onChange(showHM);
+    showCFH.onChange(showCF);
+    showVisibility.onChange(showV);
     // Fog
     // scene.fog = new THREE.Fog(0x444444, 300, 900);
 
@@ -604,6 +613,28 @@
     };
 
     animate();
+    
+    function showHM() {
+      toggleDiv("heatMap");
+    }
+    
+    function showCF() {
+      toggleDiv("difference");
+    }
+    
+     function showV() {
+      toggleDiv("visibility");
+    }
+    
+    function toggleDiv(id) {
+      let div = document.getElementById(id);
+      if(div.style.display == "none") {
+        div.style.display = "inline-block";
+      }
+      else {
+        div.style.display = "none";
+      }
+    }
     
     
     function updateLight() {
