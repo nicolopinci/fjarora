@@ -580,7 +580,7 @@
     pad: 2 },
     xaxis: {visible: false},
     yaxis: {visible: false},
-    title: "Landmark visibility"
+    title: "Landmark visibility (LV)"
   };
 
   Plotly.newPlot('heatMap', data, layoutHM);
@@ -590,11 +590,11 @@
     var gui = new dat.GUI();
 
     var fjEn = gui.addFolder('Fjarora environment');
-    var currentTime = fjEn.add(fjaroraEnv, 'timeOfDay', 0, 10).step(1).listen();
-    var showMarkers = fjEn.add(fjaroraEnv, 'showMarkers').listen();
-    var showHeatmap = fjEn.add(fjaroraEnv, 'showHeatmap').listen();
-    var showCFH = fjEn.add(fjaroraEnv, 'showCFH').listen();
-    var showVisibility = fjEn.add(fjaroraEnv, 'showVisibility').listen();
+    var currentTime = fjEn.add(fjaroraEnv, 'timeOfDay', 0, 10).step(1).name("Time").listen();
+    var showMarkers = fjEn.add(fjaroraEnv, 'showMarkers').name("Show markers").listen();
+    var showHeatmap = fjEn.add(fjaroraEnv, 'showHeatmap').name("Show heat map").listen();
+    var showCFH = fjEn.add(fjaroraEnv, 'showCFH').name("Show CFH").listen();
+    var showVisibility = fjEn.add(fjaroraEnv, 'showVisibility').name("Show LV map").listen();
     fjEn.open();
 
     currentTime.onChange(updateLight);
