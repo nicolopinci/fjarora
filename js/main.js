@@ -13,8 +13,17 @@
   
 (function () {
 
+  function obtainHeatTensor(map, xMin, zMin, xMax, zMax, xStep, zStep) {
+    let heatTensor = [];
+    for(let t=1; t<=10; ++t) {
+      heatTensor.push(obtainDataHeat(t, map, xMin, zMin, xMax, zMax, xStep, zStep));
+      }
+      //console.log(heatTensor);
+      return heatTensor;
+  }
 
   function obtainDataHeat(t, map, xMin, zMin, xMax, zMax, xStep, zStep) {
+    
     
     let heatData = [];
     
@@ -27,7 +36,6 @@
       heatData.push(currentX);
     }
     
-
     return heatData;
   }
   
@@ -531,7 +539,7 @@
     
     var diffD = [
     {
-      z: obtainDataHeat(fjaroraEnv.timeOfDay, D, -meadowWidth/2, -meadowLength/2, meadowWidth/2, meadowLength/2, resolution, resolution),
+      z: cumulate(obtainHeatTensor(D, -meadowWidth/2, -meadowLength/2, meadowWidth/2, meadowLength/2, resolution, resolution)),
       type: 'heatmap'
     }
   ];
@@ -647,13 +655,7 @@
     }
   ];
   
-      var diffD = [
-    {
-      z: obtainDataHeat(fjaroraEnv.timeOfDay, D, -meadowWidth/2, -meadowLength/2, meadowWidth/2, meadowLength/2, resolution, resolution),
-      type: 'heatmap'
-    }
-  ];
-  
+     
   
   
 
@@ -669,24 +671,39 @@
     title: "Heat map"
   };
   
-   var layoutCFH = {
-  margin: {
-    l: 25,
-    r: 25,
-    b: 25,
-    t: 40,
-    pad: 2 },
-    xaxis: {visible: false},
-    yaxis: {visible: false},
-    title: "CFH"
-  };
+ 
   
 
 
   Plotly.newPlot('heatMap', data, layoutHM);
-  Plotly.newPlot('difference', diffD, layoutCFH);
 
 
+}
+
+function cumulate(timeseries) {
+  let time = timeseries.length;
+
+  let cumulate = [];
+
+    for(let i=0; i<timeseries[0].length; ++i) {
+      let row = [];
+      for(let j=0; j<timeseries[0][i].length; ++j) {
+        row.push(0);
+      }
+      cumulate.push(row);
+    }
+  
+  
+  
+  for(let t=0; t<time; ++t) {
+    for(let i=0; i<timeseries[t].length; ++i) {
+      for(let j=0; j<timeseries[t][i].length; ++j) {
+        cumulate[i][j] += timeseries[t][i][j];
+      }
+    }
+  }
+  
+  return cumulate;
 }
 
 
@@ -715,7 +732,7 @@ for(let i=0; i<scene.children.length; ++i) {
   landmarkHeight = 2*landmark.position.y;
   
   for(let h=0; h<landmarkHeight; h+=resolution) {
-    for(let theta=0; theta<360; theta+=0.1) {
+    for(let theta=0; theta<360; theta+=1) {
       let rc = new THREE.Raycaster();
       rc.set(new THREE.Vector3(landmarkX, h, landmarkZ), new THREE.Vector3(Math.sin(theta*Math.PI/180), 0, Math.cos(theta*Math.PI/180)).normalize());
               
