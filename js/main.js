@@ -776,10 +776,11 @@ function drawMarkers() {
       }
     }
     
-    correction = correction/255;
+    correction = 255/correction;
   
       for(let m=0; m<cumulativeMap.length; ++m) {
         var geometry = new THREE.ConeGeometry( 5, 20, 32 );
+        console.log("rgb("+ Math.floor(cumulativeMap[m].tot/correction) +", 102, 102)");
         var material = new THREE.MeshBasicMaterial( {color: "rgb("+ Math.floor(cumulativeMap[m].tot/correction) +", 102, 102)"} );
         var marker = new THREE.Mesh( geometry, material );
         marker.position.x = cumulativeMap[m].x;
