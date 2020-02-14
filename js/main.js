@@ -776,7 +776,7 @@ function drawMarkers() {
       }
     }
     
-    correction = 255/correction;
+    correction = correction/255;
   
       for(let m=0; m<cumulativeMap.length; ++m) {
         var geometry = new THREE.ConeGeometry( 5, 20, 32 );
