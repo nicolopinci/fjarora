@@ -2,9 +2,9 @@
     let resolution = 5;
       const halfside = 750;
   const square = 60;
-  const minHeight = 10;
-  const threshold = 10.5;
-  const maxHeight = 15;
+  const minHeight = 9;
+  const threshold = 10.5; //10.5;
+  const maxHeight = 30;
 
   const meadowWidth = 200;
   const meadowLength = 200;
@@ -288,9 +288,8 @@
         concreteBump.wrapT = THREE.RepeatWrapping;
         concreteBump.repeat.set(2, 2*Math.ceil(height/10));
 
-
         let whichTexture = Math.floor(Math.random()*buildingTexture.length);
-
+        
         const oldMaterial =
           new THREE.MeshStandardMaterial(
             {
@@ -345,6 +344,7 @@
       cone.rotation.y = Math.PI/4 + building.rotation.y;
       cone.name = "roof";
       scene.add(cone);
+      
 
     }
     return scene;
@@ -463,7 +463,7 @@
 
     for(let x=-halfside; x<halfside; x+=square) {
       for(let z=-halfside; z<halfside; z+=square) {
-        let heightOld = minHeight + 0.1*Math.abs(Math.pow(x,2)/halfside-Math.pow(z, 2)/halfside);
+        let heightOld = minHeight + 0.1*Math.abs(Math.pow(x, 2)/halfside - Math.pow(z, 2)/halfside);
         let heightNew = 50 + Math.abs(maxHeight*Math.sin(x+z));
 
           if(heightOld>threshold && heightOld < maxHeight && z>=0) {
