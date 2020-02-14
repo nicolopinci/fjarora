@@ -2,7 +2,7 @@
     let resolution = 5;
       const halfside = 750;
   const square = 60;
-  const minHeight = 9;
+  const minHeight = 8;
   const threshold = 10.5; //10.5;
   const maxHeight = 25;
 
