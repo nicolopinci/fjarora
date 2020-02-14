@@ -779,8 +779,8 @@ function drawMarkers() {
   
       for(let m=0; m<cumulativeMap.length; ++m) {
         var geometry = new THREE.ConeGeometry( 5, 20, 32 );
-        console.log("rgb("+ Math.floor(255*cumulativeMap[m].tot/correction) +", 102, 102)");
-        var material = new THREE.MeshBasicMaterial( {color: "rgb("+ Math.floor(cumulativeMap[m].tot/correction) +", 102, 102)"} );
+        //console.log("rgb("+ Math.floor(20*255*cumulativeMap[m].tot/correction) +", 102, 102)");
+        var material = new THREE.MeshBasicMaterial( {color: "rgb("+ 20*255*Math.floor(cumulativeMap[m].tot/correction) +", 102, 102)"} );
         var marker = new THREE.Mesh( geometry, material );
         marker.position.x = cumulativeMap[m].x;
         marker.position.z = cumulativeMap[m].z;
