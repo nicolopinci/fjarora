@@ -4,7 +4,7 @@
   const square = 60;
   const minHeight = 9;
   const threshold = 10.5; //10.5;
-  const maxHeight = 30;
+  const maxHeight = 25;
 
   const meadowWidth = 200;
   const meadowLength = 200;
